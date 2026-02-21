@@ -1,0 +1,43 @@
+{
+  "id": "62dcbca315724ebeba395089583e00b9",
+  "timestamp": "2026-02-21T15:39:29.035014+00:00Z",
+  "template_key": "research_and_knowledge_work",
+  "template": "Generate one single-sentence plain-English prompt describing a complex research and analysis task in {broad_topic} that requires gathering information from multiple sources, synthesizing insights, handling uncertainty, and producing a structured deliverable; output only the prompt text under 45 words.",
+  "filled_prompt": "Generate one single-sentence plain-English prompt describing a complex research and analysis task in market entry that requires gathering information from multiple sources, synthesizing insights, handling uncertainty, and producing a structured deliverable; output only the prompt text under 45 words.",
+  "placeholders": {
+    "broad_topic": "market entry"
+  },
+  "response": {
+    "id": "e59de1f6be72407ab9104fc2a9cd0c57",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "logprobs": null,
+        "message": {
+          "content": "Assess market entry feasibility by gathering and synthesizing varied data sources to create an actionable strategy recommendation despite limited data.",
+          "role": "assistant",
+          "function_call": null,
+          "tool_calls": null,
+          "reasoning_content": "Hmm, the user wants a single-sentence prompt under 45 words for a complex market entry task. It needs to cover research, analysis, multiple sources, synthesis, uncertainty, and a structured deliverable. \n\nLet me break down the requirements: \"complex research and analysis\" suggests depth, \"multiple sources\" implies varied inputs, \"synthesizing insights\" calls for integration, \"handling uncertainty\" means addressing unknowns, and \"structured deliverable\" requires a clear output format. \n\nI can structure the sentence to flow from gathering to synthesis, then uncertainty and deliverable. The phrase \"actionable strategy recommendation\" captures the synthesis and deliverable aspects while staying concise. The word \"assess\" opens the task broadly, and \"despite limited data\" hints at uncertainty. \n\nKeeping it under 45 words means trimming redundancies—like merging \"research and analysis\" into \"assess market entry feasibility\" which implies both. The final sentence ticks all boxes without exceeding the limit."
+        },
+        "matched_stop": 1
+      }
+    ],
+    "created": 1771688371,
+    "model": "deepseek-ai/deepseek-v3.2",
+    "object": "chat.completion",
+    "system_fingerprint": null,
+    "usage": {
+      "completion_tokens": 226,
+      "prompt_tokens": 54,
+      "total_tokens": 280,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "metadata": {
+      "weight_version": "default"
+    }
+  },
+  "children": []
+}
