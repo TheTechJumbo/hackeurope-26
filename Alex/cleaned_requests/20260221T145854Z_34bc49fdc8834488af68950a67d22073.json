@@ -1,0 +1,92 @@
+{
+  "task_id": "b7eb2078a17e",
+  "input": " Research customer insights to produce cohesive blogs, videos, and social posts across all channels while tracking engagement and conversion metrics to hit sales targets.",
+  "complexity_score": 80,
+  "eval_gen": 1,
+  "subtasks": [
+    {
+      "task_id": "b7eb2078a17e.0",
+      "input": "Gather quantitative and qualitative data about customer preferences, pain points, and behavior through surveys, social listening tools, and website analytics platforms.",
+      "complexity_score": 60,
+      "eval_gen": 1,
+      "subtasks": []
+    },
+    {
+      "task_id": "b7eb2078a17e.1",
+      "input": "Process collected data to extract actionable insights about audience segments, content preferences, and engagement trends.",
+      "complexity_score": 70,
+      "eval_gen": 1,
+      "subtasks": []
+    },
+    {
+      "task_id": "b7eb2078a17e.2",
+      "input": "Generate a list of blog, video, and social post topics that address identified customer needs and interests.",
+      "complexity_score": 40,
+      "eval_gen": 1,
+      "subtasks": []
+    },
+    {
+      "task_id": "b7eb2078a17e.3",
+      "input": "Write and edit blog posts optimized for SEO and audience engagement, incorporating customer insights.",
+      "complexity_score": 50,
+      "eval_gen": 1,
+      "subtasks": []
+    },
+    {
+      "task_id": "b7eb2078a17e.4",
+      "input": "Script, film, and edit videos addressing customer pain points or demonstrating product value.",
+      "complexity_score": 80,
+      "eval_gen": 1,
+      "subtasks": []
+    },
+    {
+      "task_id": "b7eb2078a17e.5",
+      "input": "Create platform-specific social content (text, images, hashtags) tailored to audience engagement patterns.",
+      "complexity_score": 45,
+      "eval_gen": 1,
+      "subtasks": []
+    },
+    {
+      "task_id": "b7eb2078a17e.6",
+      "input": "Schedule blogs, videos, and social posts across platforms using a coordinated publishing timeline.",
+      "complexity_score": 35,
+      "eval_gen": 1,
+      "subtasks": []
+    },
+    {
+      "task_id": "b7eb2078a17e.7",
+      "input": "Set up Google Analytics, social platform insights, and UTM-tagged links to monitor content performance.",
+      "complexity_score": 60,
+      "eval_gen": 1,
+      "subtasks": []
+    },
+    {
+      "task_id": "b7eb2078a17e.8",
+      "input": "Track likes, shares, comments, bounce rates, and time-on-page metrics daily to assess content resonance.",
+      "complexity_score": 50,
+      "eval_gen": 1,
+      "subtasks": []
+    },
+    {
+      "task_id": "b7eb2078a17e.9",
+      "input": "Measure form completions, email signups, product purchases, and other KPIs tied to revenue goals.",
+      "complexity_score": 55,
+      "eval_gen": 1,
+      "subtasks": []
+    },
+    {
+      "task_id": "b7eb2078a17e.10",
+      "input": "Compile engagement and conversion data into actionable reports highlighting top-performing content.",
+      "complexity_score": 40,
+      "eval_gen": 1,
+      "subtasks": []
+    },
+    {
+      "task_id": "b7eb2078a17e.11",
+      "input": "Adjust topics, formats, and distribution channels using performance data to improve engagement and conversions.",
+      "complexity_score": 70,
+      "eval_gen": 1,
+      "subtasks": []
+    }
+  ]
+}

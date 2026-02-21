@@ -1,0 +1,133 @@
+{
+  "parent_task_id": "b7eb2078a17e",
+  "request_file": "C:\\Users\\AlexL\\OneDrive\\Documents\\Repos\\hackeurope\\Alex\\cleaned_requests\\20260221T145854Z_34bc49fdc8834488af68950a67d22073.json",
+  "decomposed_at": "2026-02-21T15:36:08.295361+00:00Z",
+  "subtask_count": 12,
+  "subtask_ids": [
+    "b7eb2078a17e.0",
+    "b7eb2078a17e.1",
+    "b7eb2078a17e.2",
+    "b7eb2078a17e.3",
+    "b7eb2078a17e.4",
+    "b7eb2078a17e.5",
+    "b7eb2078a17e.6",
+    "b7eb2078a17e.7",
+    "b7eb2078a17e.8",
+    "b7eb2078a17e.9",
+    "b7eb2078a17e.10",
+    "b7eb2078a17e.11"
+  ],
+  "subtasks": [
+    {
+      "id": "1",
+      "title": "Collect customer data from surveys, social media, and website analytics",
+      "description": "Gather quantitative and qualitative data about customer preferences, pain points, and behavior through surveys, social listening tools, and website analytics platforms.",
+      "dependencies": [],
+      "estimated_complexity": 60
+    },
+    {
+      "id": "2",
+      "title": "Analyze data to identify customer preferences and behavior patterns",
+      "description": "Process collected data to extract actionable insights about audience segments, content preferences, and engagement trends.",
+      "dependencies": [
+        "1"
+      ],
+      "estimated_complexity": 70
+    },
+    {
+      "id": "3",
+      "title": "Brainstorm content topics aligned with customer insights",
+      "description": "Generate a list of blog, video, and social post topics that address identified customer needs and interests.",
+      "dependencies": [
+        "2"
+      ],
+      "estimated_complexity": 40
+    },
+    {
+      "id": "4",
+      "title": "Create blog content based on prioritized topics",
+      "description": "Write and edit blog posts optimized for SEO and audience engagement, incorporating customer insights.",
+      "dependencies": [
+        "3"
+      ],
+      "estimated_complexity": 50
+    },
+    {
+      "id": "5",
+      "title": "Produce video content aligned with audience preferences",
+      "description": "Script, film, and edit videos addressing customer pain points or demonstrating product value.",
+      "dependencies": [
+        "3"
+      ],
+      "estimated_complexity": 80
+    },
+    {
+      "id": "6",
+      "title": "Design social media posts for multiple platforms",
+      "description": "Create platform-specific social content (text, images, hashtags) tailored to audience engagement patterns.",
+      "dependencies": [
+        "3"
+      ],
+      "estimated_complexity": 45
+    },
+    {
+      "id": "7",
+      "title": "Develop content calendar for cross-channel distribution",
+      "description": "Schedule blogs, videos, and social posts across platforms using a coordinated publishing timeline.",
+      "dependencies": [
+        "4",
+        "5",
+        "6"
+      ],
+      "estimated_complexity": 35
+    },
+    {
+      "id": "8",
+      "title": "Implement tracking via UTM parameters and analytics tools",
+      "description": "Set up Google Analytics, social platform insights, and UTM-tagged links to monitor content performance.",
+      "dependencies": [
+        "7"
+      ],
+      "estimated_complexity": 60
+    },
+    {
+      "id": "9",
+      "title": "Monitor engagement metrics in real-time",
+      "description": "Track likes, shares, comments, bounce rates, and time-on-page metrics daily to assess content resonance.",
+      "dependencies": [
+        "8"
+      ],
+      "estimated_complexity": 50
+    },
+    {
+      "id": "10",
+      "title": "Track conversion metrics linked to sales targets",
+      "description": "Measure form completions, email signups, product purchases, and other KPIs tied to revenue goals.",
+      "dependencies": [
+        "8"
+      ],
+      "estimated_complexity": 55
+    },
+    {
+      "id": "11",
+      "title": "Generate weekly performance reports",
+      "description": "Compile engagement and conversion data into actionable reports highlighting top-performing content.",
+      "dependencies": [
+        "9",
+        "10"
+      ],
+      "estimated_complexity": 40
+    },
+    {
+      "id": "12",
+      "title": "Optimize content strategy based on data insights",
+      "description": "Adjust topics, formats, and distribution channels using performance data to improve engagement and conversions.",
+      "dependencies": [
+        "11"
+      ],
+      "estimated_complexity": 70
+    }
+  ],
+  "raw_response": "{\n  \"subtasks\": [\n    {\n      \"id\": \"1\",\n      \"title\": \"Collect customer data from surveys, social media, and website analytics\",\n      \"description\": \"Gather quantitative and qualitative data about customer preferences, pain points, and behavior through surveys, social listening tools, and website analytics platforms.\",\n      \"dependencies\": [],\n      \"estimated_complexity\": 60\n    },\n    {\n      \"id\": \"2\",\n      \"title\": \"Analyze data to identify customer preferences and behavior patterns\",\n      \"description\": \"Process collected data to extract actionable insights about audience segments, content preferences, and engagement trends.\",\n      \"dependencies\": [\"1\"],\n      \"estimated_complexity\": 70\n    },\n    {\n      \"id\": \"3\",\n      \"title\": \"Brainstorm content topics aligned with customer insights\",\n      \"description\": \"Generate a list of blog, video, and social post topics that address identified customer needs and interests.\",\n      \"dependencies\": [\"2\"],\n      \"estimated_complexity\": 40\n    },\n    {\n      \"id\": \"4\",\n      \"title\": \"Create blog content based on prioritized topics\",\n      \"description\": \"Write and edit blog posts optimized for SEO and audience engagement, incorporating customer insights.\",\n      \"dependencies\": [\"3\"],\n      \"estimated_complexity\": 50\n    },\n    {\n      \"id\": \"5\",\n      \"title\": \"Produce video content aligned with audience preferences\",\n      \"description\": \"Script, film, and edit videos addressing customer pain points or demonstrating product value.\",\n      \"dependencies\": [\"3\"],\n      \"estimated_complexity\": 80\n    },\n    {\n      \"id\": \"6\",\n      \"title\": \"Design social media posts for multiple platforms\",\n      \"description\": \"Create platform-specific social content (text, images, hashtags) tailored to audience engagement patterns.\",\n      \"dependencies\": [\"3\"],\n      \"estimated_complexity\": 45\n    },\n    {\n      \"id\": \"7\",\n      \"title\": \"Develop content calendar for cross-channel distribution\",\n      \"description\": \"Schedule blogs, videos, and social posts across platforms using a coordinated publishing timeline.\",\n      \"dependencies\": [\"4\", \"5\", \"6\"],\n      \"estimated_complexity\": 35\n    },\n    {\n      \"id\": \"8\",\n      \"title\": \"Implement tracking via UTM parameters and analytics tools\",\n      \"description\": \"Set up Google Analytics, social platform insights, and UTM-tagged links to monitor content performance.\",\n      \"dependencies\": [\"7\"],\n      \"estimated_complexity\": 60\n    },\n    {\n      \"id\": \"9\",\n      \"title\": \"Monitor engagement metrics in real-time\",\n      \"description\": \"Track likes, shares, comments, bounce rates, and time-on-page metrics daily to assess content resonance.\",\n      \"dependencies\": [\"8\"],\n      \"estimated_complexity\": 50\n    },\n    {\n      \"id\": \"10\",\n      \"title\": \"Track conversion metrics linked to sales targets\",\n      \"description\": \"Measure form completions, email signups, product purchases, and other KPIs tied to revenue goals.\",\n      \"dependencies\": [\"8\"],\n      \"estimated_complexity\": 55\n    },\n    {\n      \"id\": \"11\",\n      \"title\": \"Generate weekly performance reports\",\n      \"description\": \"Compile engagement and conversion data into actionable reports highlighting top-performing content.\",\n      \"dependencies\": [\"9\", \"10\"],\n      \"estimated_complexity\": 40\n    },\n    {\n      \"id\": \"12\",\n      \"title\": \"Optimize content strategy based on data insights\",\n      \"description\": \"Adjust topics, formats, and distribution channels using performance data to improve engagement and conversions.\",\n      \"dependencies\": [\"11\"],\n      \"estimated_complexity\": 70\n    }\n  ]\n}",
+  "error": null
+}

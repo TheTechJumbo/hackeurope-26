@@ -1,3 +1,4 @@
+
 import os
 import json
 import requests
@@ -8,12 +9,12 @@ invoke_url = "https://integrate.api.nvidia.com/v1/chat/completions"
 
 # CLI + env control for streaming: CLI overrides env
 parser = argparse.ArgumentParser(description="Call NVIDIA chat completions (streaming or non-streaming)")
-parser.add_argument("--no-stream", action="store_true", help="Disable streaming and return full JSON response")
+parser.add_argument("--stream", action="store_true", help="Enable streaming mode")
 args = parser.parse_args()
 
-# env var NO_STREAM=1 also disables streaming (unless CLI overrides)
-env_no_stream = os.getenv("NO_STREAM")
-stream_enabled = not (args.no_stream or (env_no_stream and env_no_stream != "0"))
+# env var STREAM=1 enables streaming (unless CLI overrides with --stream)
+env_stream = os.getenv("STREAM")
+stream_enabled = args.stream or (env_stream and env_stream != "0")
 
 
 def _load_key_from_dotenv(path: Path):
@@ -35,9 +36,13 @@ def _load_key_from_dotenv(path: Path):
 
 api_key = os.getenv("NVAPI_KEY") or os.getenv("NVIDIA_API_KEY")
 if not api_key:
-    # try .env next to this script
-    script_env = Path(__file__).resolve().parent / ".env"
-    api_key = _load_key_from_dotenv(script_env)
+    # try root .env (parent directories)
+    current = Path(__file__).resolve().parent
+    for p in [current] + list(current.parents):
+        env_path = p / ".env"
+        api_key = _load_key_from_dotenv(env_path)
+        if api_key:
+            break
 
 if not api_key:
     raise SystemExit("Please set NVAPI_KEY or NVIDIA_API_KEY environment variable, or add it to a .env file")
@@ -62,32 +67,8 @@ response = requests.post(invoke_url, headers=headers, json=payload, stream=strea
 
 if stream_enabled:
     for line in response.iter_lines(decode_unicode=False):
-        if not line:
-            continue
-        s = line.decode("utf-8")
-        # server-sent events include lines like: "data: {...}"
-        if s.startswith("data: "):
-            data = s[len("data: "):].strip()
-            if data == "[DONE]":
-                break
-            try:
-                obj = json.loads(data)
-            except Exception:
-                print(data)
-                continue
-
-            # choose likely fields containing assistant text
-            choices = obj.get("choices", [])
-            if choices:
-                delta = choices[0].get("delta", {})
-                content = delta.get("content") or delta.get("reasoning") or delta.get("reasoning_content")
-                if content:
-                    print(content, end="", flush=True)
-                else:
-                    # fallback: pretty-print the chunk
-                    print(json.dumps(obj, ensure_ascii=False))
-            else:
-                print(json.dumps(obj, ensure_ascii=False))
+        if line:
+            print(line.decode("utf-8"))
 else:
     # non-streaming: return full JSON response and pretty-print
     try:

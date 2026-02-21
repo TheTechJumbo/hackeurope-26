@@ -1,0 +1,55 @@
+{
+  "task_id": "42f6a6145fde",
+  "request_id": "5e9c5776d72e446fb4fb2f5a6e20139b",
+  "timestamp": "2026-02-21T15:32:17.970560+00:00Z",
+  "original_request": {
+    "id": "5e9c5776d72e446fb4fb2f5a6e20139b",
+    "timestamp": "2026-02-21T15:32:17.970560+00:00Z",
+    "template_key": "productivity_and_workflow_automation",
+    "template": "Generate one single-sentence plain-English prompt describing a realistic end-to-end operational workflow in the {industry} domain that would require coordinating multiple tools, resolving at least one constraint, updating systems, and delivering a final outcome; output only the prompt text and keep it under 40 words.",
+    "filled_prompt": "Generate one single-sentence plain-English prompt describing a realistic end-to-end operational workflow in the healthcare domain that would require coordinating multiple tools, resolving at least one constraint, updating systems, and delivering a final outcome; output only the prompt text and keep it under 40 words.",
+    "placeholders": {
+      "industry": "healthcare"
+    },
+    "response": {
+      "id": "d480d8f6cab949aaacced3c40f04d5ca",
+      "choices": [
+        {
+          "finish_reason": "stop",
+          "index": 0,
+          "logprobs": null,
+          "message": {
+            "content": "Coordinate a patient's procedure by checking OR availability, resolving scheduling conflicts, updating the medical record and billing system, and confirming the final appointment.",
+            "role": "assistant",
+            "function_call": null,
+            "tool_calls": null,
+            "reasoning_content": "Hmm, user wants a concise prompt under 40 words describing a healthcare workflow involving multiple tools, constraints, system updates, and a final outcome. Need to make it realistic and end-to-end. \n\nHealthcare often involves scheduling, resource constraints, and coordinating between systems. Let's pick a common scenario like a patient procedure. It needs to involve checking availability, resolving conflicts, updating records, and confirming the outcome. \n\nKeeping it under 40 words means cutting unnecessary details. Focus on the core actions: coordinate, check, resolve, update, confirm. The prompt should flow naturally while hitting all required elements. \n\nOkay, how about this: Coordinating a patient's procedure involves checking OR availability, resolving scheduling conflicts, updating both medical and billing records, and confirming the final appointment with the patient. That covers tools, constraints, updates, and outcome."
+          },
+          "matched_stop": 1
+        }
+      ],
+      "created": 1771687940,
+      "model": "deepseek-ai/deepseek-v3.2",
+      "object": "chat.completion",
+      "system_fingerprint": null,
+      "usage": {
+        "completion_tokens": 201,
+        "prompt_tokens": 59,
+        "total_tokens": 260,
+        "prompt_tokens_details": null,
+        "reasoning_tokens": 0
+      },
+      "metadata": {
+        "weight_version": "default"
+      }
+    },
+    "children": []
+  },
+  "complexity_evaluation": {
+    "score": null,
+    "justification": null,
+    "raw_response": null,
+    "eval_gen": 1,
+    "error": null
+  }
+}

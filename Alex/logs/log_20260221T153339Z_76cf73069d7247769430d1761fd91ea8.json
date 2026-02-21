@@ -1,0 +1,55 @@
+{
+  "task_id": "34aba39ef18f",
+  "request_id": "526256b4cb5a4266b7ef986a37a0665b",
+  "timestamp": "2026-02-21T15:33:39.706284+00:00Z",
+  "original_request": {
+    "id": "526256b4cb5a4266b7ef986a37a0665b",
+    "timestamp": "2026-02-21T15:33:39.706284+00:00Z",
+    "template_key": "domain_specific_professional_task",
+    "template": "Generate one single-sentence plain-English prompt describing a high-stakes professional task in {regulated_domain} that requires structured analysis, identifying risks or compliance issues, proposing revisions, and delivering both technical and executive summaries; output only the prompt text under 45 words.",
+    "filled_prompt": "Generate one single-sentence plain-English prompt describing a high-stakes professional task in pharmaceutical clinical trials that requires structured analysis, identifying risks or compliance issues, proposing revisions, and delivering both technical and executive summaries; output only the prompt text under 45 words.",
+    "placeholders": {
+      "regulated_domain": "pharmaceutical clinical trials"
+    },
+    "response": {
+      "id": "2f2fabdcf5004bd4bf5f55ff8d35c0e7",
+      "choices": [
+        {
+          "finish_reason": "stop",
+          "index": 0,
+          "logprobs": null,
+          "message": {
+            "content": "Analyze a final clinical trial protocol for compliance risks, propose revisions to address gaps, and deliver both a technical assessment and an executive summary.",
+            "role": "assistant",
+            "function_call": null,
+            "tool_calls": null,
+            "reasoning_content": "Okay, let me break down what the user is asking for. They want a single-sentence prompt in plain English about a high-stakes task in pharmaceutical clinical trials. The task needs to include structured analysis, risk or compliance identification, proposing revisions, and delivering both technical and executive summaries. The prompt must be under 45 words.\n\nFirst, I need to ensure the prompt covers all the required elements. High-stakes professional task in clinical trials—maybe something related to a critical document or process. Structured analysis makes me think of reviewing a protocol or a safety report. Identifying risks or compliance issues is key here, so the task should involve scrutinizing something for potential problems. Proposing revisions means suggesting changes to improve it. Finally, both technical and executive summaries are needed, so the output should cater to different audiences.\n\nNow, to keep it under 45 words, I have to be concise. Maybe start with the action verb \"Analyze\" to immediately address the structured analysis part. Mention the subject, like \"clinical trial protocol,\" which is central to trials. Include risk and compliance checks, then note the revisions and summaries. Let me count the words to make sure it fits.\n\nAlso, the user specified \"plain English,\" so avoid jargon. \"High-stakes\" implies something critical, maybe a final protocol before submission. Yes, that works. Combine all elements into one smooth sentence without overcomplicating it. Check the word count—looks good. Done."
+          },
+          "matched_stop": 1
+        }
+      ],
+      "created": 1771688021,
+      "model": "deepseek-ai/deepseek-v3.2",
+      "object": "chat.completion",
+      "system_fingerprint": null,
+      "usage": {
+        "completion_tokens": 327,
+        "prompt_tokens": 55,
+        "total_tokens": 382,
+        "prompt_tokens_details": null,
+        "reasoning_tokens": 0
+      },
+      "metadata": {
+        "weight_version": "default"
+      }
+    },
+    "children": []
+  },
+  "complexity_evaluation": {
+    "score": null,
+    "justification": null,
+    "raw_response": null,
+    "eval_gen": 1,
+    "error": null
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "id": "c5dab7318b3444389dc25cf073971e3f",
+  "timestamp": "2026-02-21T15:30:43.513707+00:00Z",
+  "template_key": "content_generation_and_creative_production",
+  "template": "Generate one single-sentence plain-English prompt describing an end-to-end content campaign task in the {industry} space that involves research, multi-format content creation, consistency across channels, and measurable goals; output only the prompt text under 45 words.",
+  "filled_prompt": "Generate one single-sentence plain-English prompt describing an end-to-end content campaign task in the education space that involves research, multi-format content creation, consistency across channels, and measurable goals; output only the prompt text under 45 words.",
+  "placeholders": {
+    "industry": "education"
+  },
+  "response": {
+    "id": "7356f81fd7bb4e99b6b0c7f1154e9725",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "logprobs": null,
+        "message": {
+          "content": "Research and produce a multi-format educational campaign maintaining brand voice across channels to achieve specific engagement and conversion targets.",
+          "role": "assistant",
+          "function_call": null,
+          "tool_calls": null,
+          "reasoning_content": "Hmm, the user wants a concise prompt under 45 words for an education content campaign. They specified it must include research, multi-format creation, channel consistency, and measurable goals. \n\nOkay, I need to pack all those elements into one smooth sentence. Maybe start with the research aspect, then mention the content types, tie in cross-channel alignment, and end with the goal. \n\nLet me try structuring it like: \"Research and produce a multi-format educational campaign...\" That covers research and formats. Adding \"maintaining brand voice across channels\" handles consistency. Ending with \"to achieve specific engagement and conversion targets\" addresses measurability. \n\nWord count looks good too."
+        },
+        "matched_stop": 1
+      }
+    ],
+    "created": 1771687845,
+    "model": "deepseek-ai/deepseek-v3.2",
+    "object": "chat.completion",
+    "system_fingerprint": null,
+    "usage": {
+      "completion_tokens": 162,
+      "prompt_tokens": 52,
+      "total_tokens": 214,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "metadata": {
+      "weight_version": "default"
+    }
+  },
+  "children": []
+}

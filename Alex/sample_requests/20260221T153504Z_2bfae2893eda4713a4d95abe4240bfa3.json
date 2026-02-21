@@ -1,0 +1,43 @@
+{
+  "id": "ec91893fecef4854b4668b43dc9a729c",
+  "timestamp": "2026-02-21T15:35:04.416938+00:00Z",
+  "template_key": "customer_support_and_service_automation",
+  "template": "Generate one single-sentence plain-English prompt describing a multi-case customer support automation workflow for a {business_type} that involves triage, automatic resolution of simple issues, escalation of complex cases, and performance tracking; output only the prompt text under 40 words.",
+  "filled_prompt": "Generate one single-sentence plain-English prompt describing a multi-case customer support automation workflow for a managed hosting provider that involves triage, automatic resolution of simple issues, escalation of complex cases, and performance tracking; output only the prompt text under 40 words.",
+  "placeholders": {
+    "business_type": "managed hosting provider"
+  },
+  "response": {
+    "id": "ad5f953e84ed4e4687422209ee42f982",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "logprobs": null,
+        "message": {
+          "content": "Triage incoming tickets, auto-fix common issues, escalate complex cases to engineers, and track resolution metrics.",
+          "role": "assistant",
+          "function_call": null,
+          "tool_calls": null,
+          "reasoning_content": "Hmm, the user wants a concise single-sentence prompt under 40 words for a customer support automation workflow. Let me break down the requirements: it needs to cover triage, automatic resolution, escalation, and performance tracking for a managed hosting provider.\n\nI should start by identifying the key components: triage to categorize issues, auto-fix for simple problems, escalation for complex cases, and analytics for tracking. The challenge is fitting all that into one sentence under 40 words.\n\nMaybe structure it as a flow: triage incoming tickets, resolve common ones automatically, escalate others, and monitor the system’s performance. That covers all points without extra details. Let me check the word count—yes, this should fit."
+        },
+        "matched_stop": 1
+      }
+    ],
+    "created": 1771688106,
+    "model": "deepseek-ai/deepseek-v3.2",
+    "object": "chat.completion",
+    "system_fingerprint": null,
+    "usage": {
+      "completion_tokens": 170,
+      "prompt_tokens": 55,
+      "total_tokens": 225,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "metadata": {
+      "weight_version": "default"
+    }
+  },
+  "children": []
+}

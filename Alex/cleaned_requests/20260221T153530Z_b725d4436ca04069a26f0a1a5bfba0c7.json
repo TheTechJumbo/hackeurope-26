@@ -1,0 +1,7 @@
+{
+  "task_id": "11ff0fd0cca2",
+  "input": "Design a system that routes tickets, automatically resolves simple issues, escalates complex cases to engineers, and tracks resolution rates and performance metrics.",
+  "complexity_score": null,
+  "eval_gen": 1,
+  "subtasks": []
+}

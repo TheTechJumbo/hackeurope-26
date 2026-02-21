@@ -1,0 +1,43 @@
+{
+  "id": "1363d68628054b5cb4ad33d459aa101e",
+  "timestamp": "2026-02-21T15:33:29.708344+00:00Z",
+  "template_key": "research_and_knowledge_work",
+  "template": "Generate one single-sentence plain-English prompt describing a complex research and analysis task in {broad_topic} that requires gathering information from multiple sources, synthesizing insights, handling uncertainty, and producing a structured deliverable; output only the prompt text under 45 words.",
+  "filled_prompt": "Generate one single-sentence plain-English prompt describing a complex research and analysis task in market entry that requires gathering information from multiple sources, synthesizing insights, handling uncertainty, and producing a structured deliverable; output only the prompt text under 45 words.",
+  "placeholders": {
+    "broad_topic": "market entry"
+  },
+  "response": {
+    "id": "f6dcbd13272843adad449d73abd580af",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "logprobs": null,
+        "message": {
+          "content": "Analyze a new market's entry potential by gathering data from multiple sources, synthesizing insights to address uncertainties, and producing a structured market entry strategy report.",
+          "role": "assistant",
+          "function_call": null,
+          "tool_calls": null,
+          "reasoning_content": "First, the task is to generate a single-sentence plain-English prompt. It must describe a complex research and analysis task in market entry. The task should involve gathering information from multiple sources, synthesizing insights, handling uncertainty, and producing a structured deliverable.\n\nKey elements to include:\n- Market entry context\n- Gathering from multiple sources\n- Synthesizing insights\n- Handling uncertainty\n- Producing a structured deliverable\n\nThe prompt should be under 45 words. I need to ensure it's a single sentence and in plain English.\n\nI'll brainstorm a prompt that incorporates all these aspects. For example: \"Analyze the feasibility of entering a new market by compiling data from industry reports, competitor analysis, and customer surveys, then synthesize findings to address risks and create a detailed market entry strategy report.\"\n\nLet me check the word count: \"Analyze the feasibility of entering a new market by compiling data from industry reports, competitor analysis, and customer surveys, then synthesize findings to address risks and create a detailed market entry strategy report.\" That's 25 words. It includes gathering from multiple sources (industry reports, competitor analysis, customer surveys), synthesizing insights, handling uncertainty (address risks), and producing a structured deliverable (detailed market entry strategy report).\n\nBut is it complex enough? The task is described as complex, so I should emphasize that. Also, \"handling uncertainty\" might be implied by addressing risks, but I can make it more explicit.\n\nAnother version: \"Conduct comprehensive market entry research by integrating data from diverse sources, evaluating uncertainties, and synthesizing insights to produce a structured strategic recommendation document.\"\n\nWord count: 18 words. This includes integrating data (gathering), evaluating uncertainties (handling uncertainty), synthesizing insights, and producing a structured deliverable.\n\nI need to ensure it's specifically about market entry. The first example is more explicit.\n\nLet me refine: \"Perform an in-depth analysis for market entry by gathering information from multiple sources, synthesizing insights to manage uncertainties, and delivering a structured market entry plan.\"\n\nWord count: 20 words. This covers all points.\n\nTo make it more complex, I can add details: \"Research and analyze a new market's viability by collecting data from industry reports, financial models, and expert interviews, then synthesize insights to navigate uncertainties and produce a structured market entry roadmap.\"\n\nWord count: 24 words. Yes, this seems comprehensive.\n\nI should ensure it's a single sentence. All my examples are single sentences.\n\nNow, under 45 words: all my examples are well under that limit.\n\nI'll choose one that best captures all elements. Let me write the final prompt.\n\nFinal Prompt: \"Analyze a new market's entry potential by gathering data from multiple sources, synthesizing insights to address uncertainties, and producing a structured market entry strategy report.\"\n\nWord count: 18 words. This is concise and covers all requirements.\n\nI think this works."
+        },
+        "matched_stop": 1
+      }
+    ],
+    "created": 1771688011,
+    "model": "deepseek-ai/deepseek-v3.2",
+    "object": "chat.completion",
+    "system_fingerprint": null,
+    "usage": {
+      "completion_tokens": 622,
+      "prompt_tokens": 54,
+      "total_tokens": 676,
+      "prompt_tokens_details": null,
+      "reasoning_tokens": 0
+    },
+    "metadata": {
+      "weight_version": "default"
+    }
+  },
+  "children": []
+}

@@ -1,0 +1,7 @@
+{
+  "task_id": "c65aa2f62c98",
+  "input": "Triage incoming tickets, auto-fix common issues, escalate complex cases to engineers, and track resolution metrics.",
+  "complexity_score": 60,
+  "eval_gen": 1,
+  "subtasks": []
+}

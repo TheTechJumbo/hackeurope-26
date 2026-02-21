@@ -1,0 +1,140 @@
+{
+  "total_files": 4,
+  "files_with_decomposition": 1,
+  "total_leaves": 16,
+  "leaves_above_threshold": 13,
+  "files_analysis": [
+    {
+      "filename": "20260221T145854Z_34bc49fdc8834488af68950a67d22073.json",
+      "root_complexity": 85,
+      "has_decomposition": true,
+      "total_leaves": 13,
+      "high_complexity_leaves": 13,
+      "all_leaves": [
+        {
+          "path": "subtasks[0]",
+          "complexity_score": 60,
+          "input": "Collect demographic, behavioral, and preference data from CRM systems, surveys, ...",
+          "above_threshold": true
+        },
+        {
+          "path": "subtasks[1]",
+          "complexity_score": 70,
+          "input": "Use statistical analysis and segmentation to uncover patterns, pain points, and ...",
+          "above_threshold": true
+        },
+        {
+          "path": "subtasks[2]",
+          "complexity_score": 50,
+          "input": "Categorize customers into distinct groups using identified patterns to tailor co...",
+          "above_threshold": true
+        },
+        {
+          "path": "subtasks[3]",
+          "complexity_score": 60,
+          "input": "Create targeted messaging frameworks, content formats, and distribution channels...",
+          "above_threshold": true
+        },
+        {
+          "path": "subtasks[4]",
+          "complexity_score": 70,
+          "input": "Write and edit SEO-optimized blog posts addressing segment-specific topics and p...",
+          "above_threshold": true
+        },
+        {
+          "path": "subtasks[5]",
+          "complexity_score": 75,
+          "input": "Script, film, and edit videos tailored to each audience segment's preferences an...",
+          "above_threshold": true
+        },
+        {
+          "path": "subtasks[6]",
+          "complexity_score": 65,
+          "input": "Design and draft platform-specific social media content aligned with segment ins...",
+          "above_threshold": true
+        },
+        {
+          "path": "subtasks[7]",
+          "complexity_score": 50,
+          "input": "Schedule and publish blogs, videos, and social posts on relevant platforms using...",
+          "above_threshold": true
+        },
+        {
+          "path": "subtasks[8]",
+          "complexity_score": 60,
+          "input": "Set up analytics tools to measure metrics like click-through rates, time spent, ...",
+          "above_threshold": true
+        },
+        {
+          "path": "subtasks[9]",
+          "complexity_score": 70,
+          "input": "Evaluate tracking metrics to determine content effectiveness and identify underp...",
+          "above_threshold": true
+        },
+        {
+          "path": "subtasks[10]",
+          "complexity_score": 75,
+          "input": "Revise content strategies and assets using performance data to improve engagemen...",
+          "above_threshold": true
+        },
+        {
+          "path": "subtasks[11]",
+          "complexity_score": 55,
+          "input": "Map engagement and conversion data to revenue KPIs to ensure content directly su...",
+          "above_threshold": true
+        },
+        {
+          "path": "subtasks[12]",
+          "complexity_score": 60,
+          "input": "Compile actionable reports showing content impact on sales targets, including re...",
+          "above_threshold": true
+        }
+      ]
+    },
+    {
+      "filename": "20260221T151338Z_9ecdad18d01e4e1abd842b999df4d034.json",
+      "root_complexity": null,
+      "has_decomposition": false,
+      "total_leaves": 1,
+      "high_complexity_leaves": 0,
+      "all_leaves": [
+        {
+          "path": "",
+          "complexity_score": null,
+          "input": " Analyze live turbine data, adjust settings within safety constraints, monitor t...",
+          "above_threshold": false
+        }
+      ]
+    },
+    {
+      "filename": "20260221T151518Z_4ad88093fcf3478e8ab4a4a14c26f2f5.json",
+      "root_complexity": null,
+      "has_decomposition": false,
+      "total_leaves": 1,
+      "high_complexity_leaves": 0,
+      "all_leaves": [
+        {
+          "path": "",
+          "complexity_score": null,
+          "input": " Analyze live turbine data, adjust parameters within safety constraints, monitor...",
+          "above_threshold": false
+        }
+      ]
+    },
+    {
+      "filename": "20260221T152340Z_3d9eeb16b51d4be5ab7aae0719f6b204.json",
+      "root_complexity": null,
+      "has_decomposition": false,
+      "total_leaves": 1,
+      "high_complexity_leaves": 0,
+      "all_leaves": [
+        {
+          "path": "",
+          "complexity_score": null,
+          "input": " Process a flagged high-value international wire transfer by verifying sanctions...",
+          "above_threshold": false
+        }
+      ]
+    }
+  ]
+}

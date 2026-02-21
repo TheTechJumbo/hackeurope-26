@@ -1,0 +1,7 @@
+{
+  "task_id": "1297a7925f5c",
+  "input": " Analyze live turbine data, adjust settings within safety constraints, monitor the results, and report performance improvements to optimize wind farm operations.",
+  "complexity_score": 65,
+  "eval_gen": 1,
+  "subtasks": []
+}

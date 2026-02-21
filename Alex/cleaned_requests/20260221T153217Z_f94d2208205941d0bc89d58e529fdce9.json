@@ -1,0 +1,7 @@
+{
+  "task_id": "42f6a6145fde",
+  "input": "Coordinate a patient's procedure by checking OR availability, resolving scheduling conflicts, updating the medical record and billing system, and confirming the final appointment.",
+  "complexity_score": null,
+  "eval_gen": 1,
+  "subtasks": []
+}

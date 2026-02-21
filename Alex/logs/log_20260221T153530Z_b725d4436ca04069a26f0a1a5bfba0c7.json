@@ -1,0 +1,55 @@
+{
+  "task_id": "11ff0fd0cca2",
+  "request_id": "7dab1ae9df5b4e4b90f02ba05f0fa5d3",
+  "timestamp": "2026-02-21T15:35:30.723132+00:00Z",
+  "original_request": {
+    "id": "7dab1ae9df5b4e4b90f02ba05f0fa5d3",
+    "timestamp": "2026-02-21T15:35:30.723132+00:00Z",
+    "template_key": "customer_support_and_service_automation",
+    "template": "Generate one single-sentence plain-English prompt describing a multi-case customer support automation workflow for a {business_type} that involves triage, automatic resolution of simple issues, escalation of complex cases, and performance tracking; output only the prompt text under 40 words.",
+    "filled_prompt": "Generate one single-sentence plain-English prompt describing a multi-case customer support automation workflow for a managed hosting provider that involves triage, automatic resolution of simple issues, escalation of complex cases, and performance tracking; output only the prompt text under 40 words.",
+    "placeholders": {
+      "business_type": "managed hosting provider"
+    },
+    "response": {
+      "id": "cf5359a76e044b859742d96e95040202",
+      "choices": [
+        {
+          "finish_reason": "stop",
+          "index": 0,
+          "logprobs": null,
+          "message": {
+            "content": "Design a system that routes tickets, automatically resolves simple issues, escalates complex cases to engineers, and tracks resolution rates and performance metrics.",
+            "role": "assistant",
+            "function_call": null,
+            "tool_calls": null,
+            "reasoning_content": "Hmm, the user wants a concise single-sentence prompt under 40 words for a managed hosting support workflow. The key elements are triage, auto-resolution, escalation, and tracking. \n\nI can structure it to cover the workflow flow naturally: start with triage, then handle simple issues automatically, escalate complex ones, and end with tracking. \n\nKeeping it under 40 words means using efficient phrasing like \"flagging simple issues\" and \"performance metrics\" to pack everything in. The sentence should feel complete but lean."
+          },
+          "matched_stop": 1
+        }
+      ],
+      "created": 1771688132,
+      "model": "deepseek-ai/deepseek-v3.2",
+      "object": "chat.completion",
+      "system_fingerprint": null,
+      "usage": {
+        "completion_tokens": 135,
+        "prompt_tokens": 55,
+        "total_tokens": 190,
+        "prompt_tokens_details": null,
+        "reasoning_tokens": 0
+      },
+      "metadata": {
+        "weight_version": "default"
+      }
+    },
+    "children": []
+  },
+  "complexity_evaluation": {
+    "score": null,
+    "justification": null,
+    "raw_response": null,
+    "eval_gen": 1,
+    "error": null
+  }
+}

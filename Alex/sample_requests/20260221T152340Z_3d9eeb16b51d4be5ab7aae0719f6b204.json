@@ -1,0 +1,64 @@
+{
+  "id": "69b80703dfc9432c869bbfa6ef474735",
+  "timestamp": "2026-02-21T15:23:40.505990+00:00Z",
+  "template_key": "productivity_and_workflow_automation",
+  "template": "Generate one single-sentence plain-English prompt describing a realistic end-to-end operational workflow in the {industry} domain that would require coordinating multiple tools, resolving at least one constraint, updating systems, and delivering a final outcome; output only the prompt text and keep it under 40 words.",
+  "filled_prompt": "Generate one single-sentence plain-English prompt describing a realistic end-to-end operational workflow in the fintech domain that would require coordinating multiple tools, resolving at least one constraint, updating systems, and delivering a final outcome; output only the prompt text and keep it under 40 words.",
+  "placeholders": {
+    "industry": "fintech"
+  },
+  "request_payload": {
+    "model": "moonshotai/kimi-k2.5",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Generate one single-sentence plain-English prompt describing a realistic end-to-end operational workflow in the fintech domain that would require coordinating multiple tools, resolving at least one constraint, updating systems, and delivering a final outcome; output only the prompt text and keep it under 40 words."
+      }
+    ],
+    "max_tokens": 16384,
+    "temperature": 1.0,
+    "top_p": 1.0,
+    "stream": false,
+    "chat_template_kwargs": {
+      "thinking": true
+    }
+  },
+  "response": {
+    "id": "chatcmpl-a13ebbd8e93fbc3b",
+    "object": "chat.completion",
+    "created": 1771687343,
+    "model": "moonshotai/kimi-k2.5",
+    "choices": [
+      {
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": " Process a flagged high-value international wire transfer by verifying sanctions lists via API, resolving a compliance hold due to missing beneficiary details, updating the core banking ledger, and confirming settlement to the client.",
+          "refusal": null,
+          "annotations": null,
+          "audio": null,
+          "function_call": null,
+          "tool_calls": [],
+          "reasoning": " The user wants a single-sentence, plain-English prompt describing a realistic end-to-end operational workflow in fintech. Requirements:\n- Must involve coordinating multiple tools\n- Must resolve at least one constraint\n- Must update systems\n- Must deliver a final outcome\n- Under 40 words\n- Output only the prompt text\n\nLet me draft some options:\n\n1. \"Process a flagged high-value international wire transfer by verifying sanctions lists via API, resolving a compliance hold due to missing beneficiary details, updating the core banking ledger, and confirming settlement to the client.\"\n\nCount: 23 words. Check requirements:\n- Multiple tools: sanctions list API, core banking system\n- Constraint: compliance hold/missing beneficiary details (needs resolution)\n- Update systems: updating core banking ledger\n- Final outcome: confirming settlement to client\n- Domain: fintech/wire transfer\n\n2. \"Reconcile a failed ACH batch by identifying NSF accounts through the risk engine, securing manual approval for retry limits, posting adjustments to the general ledger, and notifying customers of completed reversals.\"\n\nCount: 24 words. Check:\n- Tools: risk engine, general ledger system, notification system\n- Constraint: failed batch/NSF accounts requiring manual approval for retry limits\n- Updates: posting adjustments to GL\n- Outcome: notifying customers of completed reversals\n\n3. \"Handle a disputed cryptocurrency purchase by freezing the wallet via the custody platform, gathering KYC evidence to lift the fraud alert, adjusting the transaction log, and issuing a fiat refund to the user's bank account.\"\n\nCount: 26 words.\n\nOption 1 seems cleanest and most clearly \"operational workflow.\" Let me verify word count and constraints.\n\nOption 1: \"Process a flagged high-value international wire transfer by verifying sanctions lists via API, resolving a compliance hold due to missing beneficiary details, updating the core banking ledger, and confirming settlement to the client.\"\n\nWord by word:\n1. Process\n2. a\n3. flagged\n4. high-value\n5. international\n6. wire\n7. transfer\n8. by\n9. verifying\n10. sanctions\n11. lists\n12. via\n13. API,\n14. resolving\n15. a\n16. compliance\n17. hold\n18. due\n19. to\n20. missing\n21. beneficiary\n22. details,\n23. updating\n24. the\n25. core\n26. banking\n27. ledger,\n28. and\n29. confirming\n30. settlement\n31. to\n32. the\n33. client.\n\n33 words. Good.\n\nCheck if it meets all criteria:\n- Realistic end-to-end operational workflow: Yes, wire processing with exceptions handling\n- Fintech domain: Yes\n- Coordinating multiple tools: sanctions list API, core banking system (implied), presumably compliance system\n- Resolving constraint: resolving a compliance hold due to missing beneficiary details\n- Updating systems: updating the core banking ledger\n- Delivering final outcome: confirming settlement to client\n- Single sentence: Yes\n- Plain English: Yes\n- Under 40 words: Yes (33 words)\n- Output only prompt text: Yes\n\nThis looks good. ",
+          "reasoning_content": " The user wants a single-sentence, plain-English prompt describing a realistic end-to-end operational workflow in fintech. Requirements:\n- Must involve coordinating multiple tools\n- Must resolve at least one constraint\n- Must update systems\n- Must deliver a final outcome\n- Under 40 words\n- Output only the prompt text\n\nLet me draft some options:\n\n1. \"Process a flagged high-value international wire transfer by verifying sanctions lists via API, resolving a compliance hold due to missing beneficiary details, updating the core banking ledger, and confirming settlement to the client.\"\n\nCount: 23 words. Check requirements:\n- Multiple tools: sanctions list API, core banking system\n- Constraint: compliance hold/missing beneficiary details (needs resolution)\n- Update systems: updating core banking ledger\n- Final outcome: confirming settlement to client\n- Domain: fintech/wire transfer\n\n2. \"Reconcile a failed ACH batch by identifying NSF accounts through the risk engine, securing manual approval for retry limits, posting adjustments to the general ledger, and notifying customers of completed reversals.\"\n\nCount: 24 words. Check:\n- Tools: risk engine, general ledger system, notification system\n- Constraint: failed batch/NSF accounts requiring manual approval for retry limits\n- Updates: posting adjustments to GL\n- Outcome: notifying customers of completed reversals\n\n3. \"Handle a disputed cryptocurrency purchase by freezing the wallet via the custody platform, gathering KYC evidence to lift the fraud alert, adjusting the transaction log, and issuing a fiat refund to the user's bank account.\"\n\nCount: 26 words.\n\nOption 1 seems cleanest and most clearly \"operational workflow.\" Let me verify word count and constraints.\n\nOption 1: \"Process a flagged high-value international wire transfer by verifying sanctions lists via API, resolving a compliance hold due to missing beneficiary details, updating the core banking ledger, and confirming settlement to the client.\"\n\nWord by word:\n1. Process\n2. a\n3. flagged\n4. high-value\n5. international\n6. wire\n7. transfer\n8. by\n9. verifying\n10. sanctions\n11. lists\n12. via\n13. API,\n14. resolving\n15. a\n16. compliance\n17. hold\n18. due\n19. to\n20. missing\n21. beneficiary\n22. details,\n23. updating\n24. the\n25. core\n26. banking\n27. ledger,\n28. and\n29. confirming\n30. settlement\n31. to\n32. the\n33. client.\n\n33 words. Good.\n\nCheck if it meets all criteria:\n- Realistic end-to-end operational workflow: Yes, wire processing with exceptions handling\n- Fintech domain: Yes\n- Coordinating multiple tools: sanctions list API, core banking system (implied), presumably compliance system\n- Resolving constraint: resolving a compliance hold due to missing beneficiary details\n- Updating systems: updating the core banking ledger\n- Delivering final outcome: confirming settlement to client\n- Single sentence: Yes\n- Plain English: Yes\n- Under 40 words: Yes (33 words)\n- Output only prompt text: Yes\n\nThis looks good. "
+        },
+        "logprobs": null,
+        "finish_reason": "stop",
+        "stop_reason": 163586,
+        "token_ids": null
+      }
+    ],
+    "service_tier": null,
+    "system_fingerprint": null,
+    "usage": {
+      "prompt_tokens": 65,
+      "total_tokens": 754,
+      "completion_tokens": 689,
+      "prompt_tokens_details": null
+    },
+    "prompt_logprobs": null,
+    "prompt_token_ids": null,
+    "kv_transfer_params": null
+  },
+  "children": []
+}

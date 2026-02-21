@@ -1,0 +1,55 @@
+{
+  "task_id": "cc5a3be79fc4",
+  "request_id": "636630faf9614dc5be5f6fd6e9d63d4b",
+  "timestamp": "2026-02-21T15:31:48.124188+00:00Z",
+  "original_request": {
+    "id": "636630faf9614dc5be5f6fd6e9d63d4b",
+    "timestamp": "2026-02-21T15:31:48.124188+00:00Z",
+    "template_key": "domain_specific_professional_task",
+    "template": "Generate one single-sentence plain-English prompt describing a high-stakes professional task in {regulated_domain} that requires structured analysis, identifying risks or compliance issues, proposing revisions, and delivering both technical and executive summaries; output only the prompt text under 45 words.",
+    "filled_prompt": "Generate one single-sentence plain-English prompt describing a high-stakes professional task in financial audits that requires structured analysis, identifying risks or compliance issues, proposing revisions, and delivering both technical and executive summaries; output only the prompt text under 45 words.",
+    "placeholders": {
+      "regulated_domain": "financial audits"
+    },
+    "response": {
+      "id": "90e6b0bce7eb4c4d80c7ef1c47fe7729",
+      "choices": [
+        {
+          "finish_reason": "stop",
+          "index": 0,
+          "logprobs": null,
+          "message": {
+            "content": "Conduct a structured audit analysis to pinpoint financial risks and compliance issues, recommend revisions, and deliver both technical and executive summary reports.",
+            "role": "assistant",
+            "function_call": null,
+            "tool_calls": null,
+            "reasoning_content": "First, the task is to generate a single-sentence plain-English prompt. It must describe a high-stakes professional task in financial audits. The task should involve structured analysis, identifying risks or compliance issues, proposing revisions, and delivering both technical and executive summaries.\n\nKey elements from the user's request:\n- Single sentence: So, I need to write one cohesive sentence.\n- Plain-English: Use simple, clear language without jargon.\n- High-stakes professional task in financial audits: This sets the context.\n- Requires: Structured analysis, identifying risks or compliance issues, proposing revisions, and delivering both technical and executive summaries.\n- Output only the prompt text: I shouldn't add any extra commentary or formatting.\n- Under 45 words: I need to count the words to ensure it's within the limit.\n\nI need to craft a prompt that encapsulates all these elements. Let me brainstorm a sentence structure.\n\nPossible prompt: \"Analyze financial statements to identify audit risks and compliance gaps, propose corrective actions, and prepare detailed technical and executive summaries.\"\n\nBut let's check if it covers all points:\n- Structured analysis: Implied in \"analyze financial statements.\"\n- Identifying risks or compliance issues: \"identify audit risks and compliance gaps.\"\n- Proposing revisions: \"propose corrective actions.\"\n- Delivering both technical and executive summaries: \"prepare detailed technical and executive summaries.\"\n- High-stakes professional task: \"financial audits\" context implies high-stakes.\n\nNow, ensure it's a single sentence and under 45 words. Count the words: \"Analyze financial statements to identify audit risks and compliance gaps, propose corrective actions, and prepare detailed technical and executive summaries.\" That's 16 words. Well under 45.\n\nIs it plain-English? Yes, it uses common terms.\n\nIs it descriptive of a high-stakes task? Yes, because financial audits are critical for regulatory compliance and financial integrity.\n\nI should make it more specific to \"financial audits\" as per the context. The user said \"in financial audits,\" so my prompt should explicitly mention that. My current prompt starts with \"Analyze financial statements,\" which is part of financial audits, but I can tweak it to be clearer.\n\nAlternate version: \"Conduct a structured audit analysis to pinpoint financial risks and compliance issues, recommend revisions, and deliver both technical and executive summary reports.\"\n\nWord count: \"Conduct a structured audit analysis to pinpoint financial risks and compliance issues, recommend revisions, and deliver both technical and executive summary reports.\" That's 18 words.\n\nThis includes \"structured audit analysis\" which covers structured analysis, and \"financial risks and compliance issues\" for identifying risks. \"Recommend revisions\" for proposing revisions, and \"deliver both technical and executive summary reports\" for the summaries.\n\nI think this works. Let me ensure it's under 45 words. Yes.\n\nI'll go with this refined version."
+          },
+          "matched_stop": 1
+        }
+      ],
+      "created": 1771687910,
+      "model": "deepseek-ai/deepseek-v3.2",
+      "object": "chat.completion",
+      "system_fingerprint": null,
+      "usage": {
+        "completion_tokens": 610,
+        "prompt_tokens": 54,
+        "total_tokens": 664,
+        "prompt_tokens_details": null,
+        "reasoning_tokens": 0
+      },
+      "metadata": {
+        "weight_version": "default"
+      }
+    },
+    "children": []
+  },
+  "complexity_evaluation": {
+    "score": null,
+    "justification": null,
+    "raw_response": null,
+    "eval_gen": 1,
+    "error": null
+  }
+}
