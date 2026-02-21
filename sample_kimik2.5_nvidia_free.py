@@ -1,8 +1,8 @@
-
 import os
 import json
 import requests
 import argparse
+from pathlib import Path
 
 invoke_url = "https://integrate.api.nvidia.com/v1/chat/completions"
 
@@ -16,10 +16,6 @@ env_no_stream = os.getenv("NO_STREAM")
 stream_enabled = not (args.no_stream or (env_no_stream and env_no_stream != "0"))
 
 
-from pathlib import Path
-
-
-# prefer explicit env var names, then try loading .env in repo
 def _load_key_from_dotenv(path: Path):
     if not path.exists():
         return None
@@ -37,22 +33,14 @@ def _load_key_from_dotenv(path: Path):
     return None
 
 
-# Always load API key from the .env file next to this script (not from environment)
-# locate repository root by searching for a .git directory upward from this script
-start_dir = Path(__file__).resolve().parent
-repo_root = None
-for p in [start_dir] + list(start_dir.parents):
-    if (p / ".git").exists():
-        repo_root = p
-        break
-# fallback to workspace root (one level above script) if .git not found
-if repo_root is None:
-    repo_root = Path(__file__).resolve().parents[len(Path(__file__).resolve().parents)-1]
-
-script_env = repo_root / ".env"
-api_key = _load_key_from_dotenv(script_env)
+api_key = os.getenv("NVAPI_KEY") or os.getenv("NVIDIA_API_KEY")
 if not api_key:
-    raise SystemExit(f"Missing .env in {repo_root!s} or it does not contain NVAPI_KEY/NVIDIA_API_KEY")
+    # try .env next to this script
+    script_env = Path(__file__).resolve().parent / ".env"
+    api_key = _load_key_from_dotenv(script_env)
+
+if not api_key:
+    raise SystemExit("Please set NVAPI_KEY or NVIDIA_API_KEY environment variable, or add it to a .env file")
 
 headers = {
     "Authorization": f"Bearer {api_key}",
@@ -68,7 +56,6 @@ payload = {
     "stream": stream_enabled,
     "chat_template_kwargs": {"thinking": True},
 }
-
 
 # enable streaming at the requests level so iter_lines yields as it arrives
 response = requests.post(invoke_url, headers=headers, json=payload, stream=stream_enabled)

@@ -166,17 +166,7 @@ def main():
     ensure_domains_file(DOMAINS_PATH)
 
     for i in range(count):
-        payload = build_payload(PROMPT)
-        resp = call_llm(payload, api_key)
-        text = parse_response_json(resp)
-        domain = extract_domain(text)
-        if not domain:
-            # if parsing failed, try to extract first plausible phrase (1-5 words) from full text
-            tokens = re.findall(r"[A-Za-z0-9 &\-]+", text)
-            candidate = tokens[0] if tokens else "unknown"
-            candidate = " ".join(candidate.split()[:5])
-            domain = candidate or "unknown"
-
+        domain, text, resp = get_domain_with_retries(build_payload, api_key, attempts=3)
         record = append_domain_record(domain, text)
         print(f"[{i+1}/{count}] Added domain: {domain} (id={record['id']})")
 
