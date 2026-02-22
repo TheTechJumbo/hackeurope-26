@@ -5,7 +5,7 @@ import logging
 import re
 from typing import Any
 
-import anthropic
+from openai import AsyncOpenAI
 
 from app.blocks.executor import register_implementation
 from app.config import settings
@@ -15,13 +15,13 @@ logger = logging.getLogger("agentflow.blocks.claude_decide")
 
 @register_implementation("claude_decide")
 async def claude_decide(inputs: dict[str, Any]) -> dict[str, Any]:
-    """Use Claude to pick the best option from a set based on criteria."""
+    """Use OpenAI to pick the best option from a set based on criteria."""
     options = inputs["options"]
     criteria = inputs["criteria"]
     context = inputs.get("context", "")
 
-    if not settings.anthropic_api_key:
-        raise ValueError("ANTHROPIC_API_KEY not configured — add it to .env")
+    if not settings.openai_api_key:
+        raise ValueError("OPENAI_API_KEY not configured — add it to .env")
 
     prompt = f"""You are a decision-making assistant. Pick the BEST option from the list below.
 
@@ -35,16 +35,18 @@ Respond with ONLY valid JSON in this exact format:
 {{"chosen": <the selected option object>, "reasoning": "<why you chose it>", "confidence": <0.0-1.0>}}"""
 
     try:
-        client = anthropic.AsyncAnthropic(api_key=settings.anthropic_api_key)
-        message = await client.messages.create(
-            model="claude-sonnet-4-20250514",
+        client = AsyncOpenAI(api_key=settings.openai_api_key)
+        response = await client.chat.completions.create(
+            model=settings.default_model or "gpt-4o-mini",
             max_tokens=500,
+            temperature=settings.llm_temperature,
+            response_format={"type": "json_object"},
             messages=[{"role": "user", "content": prompt}],
         )
-    except anthropic.APIError as e:
-        raise ValueError(f"Claude API error: {e}") from e
+    except Exception as e:
+        raise ValueError(f"OpenAI API error: {e}") from e
 
-    response_text = message.content[0].text.strip()
+    response_text = (response.choices[0].message.content or "").strip()
     md_match = re.search(r"```(?:json)?\s*\n?(.*?)```", response_text, re.DOTALL)
     if md_match:
         response_text = md_match.group(1).strip()

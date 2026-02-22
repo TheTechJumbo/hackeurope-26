@@ -2,12 +2,13 @@
 
 from __future__ import annotations
 
+import inspect
 import json
 import logging
 import re
 from typing import Any
 
-import anthropic
+from openai import AsyncOpenAI
 
 from app.blocks.executor import register_implementation
 from app.blocks.registry import BlockRegistry
@@ -40,10 +41,10 @@ Respond with ONLY valid JSON (no markdown, no code fences, just raw JSON):
     "name": "Human Name",
     "description": "What it does",
     "category": "category",
-    "organ": "system|web|claude|gemini|stripe|elevenlabs|miro|email",
+    "organ": "system|web|openai|gemini|stripe|elevenlabs|miro|email",
     "input_schema": {{ ... }},
     "output_schema": {{ ... }},
-    "api_type": "real|mock",
+    "api_type": "real",
     "tier": 2,
     "examples": [{{ "input": {{}}, "output": {{}} }}]
   }},
@@ -56,7 +57,7 @@ Respond with ONLY valid JSON (no markdown, no code fences, just raw JSON):
 2. You can use these imports: httpx, json, re, datetime, bs4.BeautifulSoup
 3. The function must handle errors gracefully — return error info instead of raising.
 4. Keep implementations simple and focused.
-5. If you can't make a real implementation, set api_type to "mock" and return realistic fake data.
+5. If you can't make a real implementation, return a minimal implementation that raises a clear error instead of returning fake data.
 6. The function name should match the block_id.
 """
 
@@ -70,19 +71,26 @@ class BuilderAgent:
 
         Returns the registered BlockDefinition.
         """
-        if not settings.anthropic_api_key:
-            logger.warning("No ANTHROPIC_API_KEY — creating mock block")
-            return self._mock_create(spec)
+        if not settings.openai_api_key:
+            raise RuntimeError("OPENAI_API_KEY is not set")
 
-        client = anthropic.AsyncAnthropic(api_key=settings.anthropic_api_key)
-        message = await client.messages.create(
-            model="claude-sonnet-4-20250514",
-            max_tokens=2000,
-            system=SYSTEM_PROMPT,
-            messages=[{"role": "user", "content": json.dumps(spec, indent=2)}],
-        )
+        client = AsyncOpenAI(api_key=settings.openai_api_key)
+        try:
+            response = await client.chat.completions.create(
+                model=settings.default_model or "gpt-4o-mini",
+                max_tokens=2000,
+                temperature=settings.llm_temperature,
+                response_format={"type": "json_object"},
+                messages=[
+                    {"role": "system", "content": SYSTEM_PROMPT},
+                    {"role": "user", "content": json.dumps(spec, indent=2)},
+                ],
+            )
+        except Exception as e:
+            logger.error("OpenAI API error: %s", e)
+            raise RuntimeError("OpenAI API error") from e
 
-        response_text = message.content[0].text.strip()
+        response_text = (response.choices[0].message.content or "").strip()
 
         # Strip markdown code fences if present
         md_match = re.search(r"```(?:json)?\s*\n?(.*?)```", response_text, re.DOTALL)
@@ -91,15 +99,14 @@ class BuilderAgent:
 
         try:
             result = json.loads(response_text)
-        except json.JSONDecodeError:
+        except json.JSONDecodeError as e:
             logger.error("Builder returned invalid JSON: %s", response_text[:200])
-            logger.warning("Falling back to mock block creation")
-            return self._mock_create(spec)
+            raise ValueError("Builder returned invalid JSON") from e
 
         block_data = result["block_definition"]
         block = BlockDefinition(**block_data)
 
-        # Register the mock implementation
+        # Register the generated implementation
         impl_code = result.get("implementation_code", "")
         self._register_dynamic_implementation(block.id, impl_code)
 
@@ -117,40 +124,21 @@ class BuilderAgent:
         return created
 
     def _register_dynamic_implementation(self, block_id: str, code: str) -> None:
-        """Register a dynamically generated block implementation.
+        """Register a dynamically generated block implementation."""
+        if not code.strip():
+            raise ValueError(f"No implementation_code provided for block '{block_id}'")
 
-        For safety, we create a mock implementation that returns
-        the example output from the block definition rather than
-        executing arbitrary generated code.
-        """
-        # Safe approach: create a mock that returns realistic data
-        async def mock_impl(inputs: dict[str, Any]) -> dict[str, Any]:
-            logger.info("Executing dynamic block %s (mock mode)", block_id)
-            return {
-                "result": f"Mock output from dynamic block '{block_id}'",
-                "inputs_received": inputs,
-                "status": "mock",
-            }
+        scope: dict[str, Any] = {}
+        try:
+            exec(code, scope, scope)
+        except Exception as e:
+            logger.error("Failed to compile implementation for %s: %s", block_id, e)
+            raise
 
-        register_implementation(block_id)(mock_impl)
+        impl = scope.get(block_id)
+        if impl is None:
+            raise ValueError(f"implementation_code did not define '{block_id}'")
+        if not inspect.iscoroutinefunction(impl):
+            raise TypeError(f"implementation_code for '{block_id}' must define an async function")
 
-    def _mock_create(self, spec: dict[str, Any]) -> BlockDefinition:
-        """Create a block without calling the API."""
-        block_id = spec.get("suggested_id", f"custom_{spec.get('name', 'block').lower().replace(' ', '_')}")
-        block = BlockDefinition(
-            id=block_id,
-            name=spec.get("name", "Custom Block"),
-            description=spec.get("description", "A dynamically created block"),
-            category=spec.get("category", "perceive"),
-            organ="system",
-            input_schema=spec.get("input_schema", {}),
-            output_schema=spec.get("output_schema", {}),
-            api_type="mock",
-            tier=2,
-            examples=[{"input": {}, "output": {"result": "mock"}}],
-        )
-
-        self._register_dynamic_implementation(block.id, "")
-        self.registry.register(block)
-        logger.info("Builder created mock block: %s", block.id)
-        return block
+        register_implementation(block_id)(impl)

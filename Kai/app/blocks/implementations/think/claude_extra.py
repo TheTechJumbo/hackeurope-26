@@ -5,7 +5,7 @@ import logging
 import re
 from typing import Any
 
-import anthropic
+from openai import AsyncOpenAI
 
 from app.blocks.executor import register_implementation
 from app.config import settings
@@ -13,22 +13,24 @@ from app.config import settings
 logger = logging.getLogger("agentflow.blocks.claude_extra")
 
 
-async def _call_claude(prompt: str, max_tokens: int = 800) -> str:
-    """Shared Claude API call helper."""
-    if not settings.anthropic_api_key:
-        raise ValueError("ANTHROPIC_API_KEY not configured — add it to .env")
+async def _call_openai(prompt: str, max_tokens: int = 800) -> str:
+    """Shared OpenAI API call helper."""
+    if not settings.openai_api_key:
+        raise ValueError("OPENAI_API_KEY not configured — add it to .env")
 
     try:
-        client = anthropic.AsyncAnthropic(api_key=settings.anthropic_api_key)
-        message = await client.messages.create(
-            model="claude-sonnet-4-20250514",
+        client = AsyncOpenAI(api_key=settings.openai_api_key)
+        response = await client.chat.completions.create(
+            model=settings.default_model or "gpt-4o-mini",
             max_tokens=max_tokens,
+            temperature=settings.llm_temperature,
+            response_format={"type": "json_object"},
             messages=[{"role": "user", "content": prompt}],
         )
-    except anthropic.APIError as e:
-        raise ValueError(f"Claude API error: {e}") from e
+    except Exception as e:
+        raise ValueError(f"OpenAI API error: {e}") from e
 
-    text = message.content[0].text.strip()
+    text = (response.choices[0].message.content or "").strip()
     # Strip markdown code fences if present
     md_match = re.search(r"```(?:json)?\s*\n?(.*?)```", text, re.DOTALL)
     if md_match:
@@ -38,7 +40,7 @@ async def _call_claude(prompt: str, max_tokens: int = 800) -> str:
 
 @register_implementation("claude_analyze")
 async def claude_analyze(inputs: dict[str, Any]) -> dict[str, Any]:
-    """Use Claude to perform deep analysis on data."""
+    """Use OpenAI to perform deep analysis on data."""
     data = inputs["data"]
     question = inputs["question"]
     context = inputs.get("context", "")
@@ -54,7 +56,7 @@ Data:
 Respond with ONLY valid JSON:
 {{"analysis": "...", "findings": ["..."], "recommendation": "..."}}"""
 
-    response = await _call_claude(prompt)
+    response = await _call_openai(prompt)
     try:
         return json.loads(response)
     except json.JSONDecodeError:
@@ -63,7 +65,7 @@ Respond with ONLY valid JSON:
 
 @register_implementation("claude_recommend")
 async def claude_recommend(inputs: dict[str, Any]) -> dict[str, Any]:
-    """Use Claude to recommend the best option based on preferences and history."""
+    """Use OpenAI to recommend the best option based on preferences and history."""
     options = inputs["options"]
     preferences = inputs.get("preferences", {})
     history = inputs.get("history", [])
@@ -79,7 +81,7 @@ Options:
 Respond with ONLY valid JSON:
 {{"recommendation": <chosen option object>, "reasoning": "...", "alternatives": [<other good options>]}}"""
 
-    response = await _call_claude(prompt)
+    response = await _call_openai(prompt)
     try:
         return json.loads(response)
     except json.JSONDecodeError:
@@ -92,7 +94,7 @@ Respond with ONLY valid JSON:
 
 @register_implementation("claude_categorize")
 async def claude_categorize(inputs: dict[str, Any]) -> dict[str, Any]:
-    """Use Claude to classify content into categories."""
+    """Use OpenAI to classify content into categories."""
     content = inputs["content"]
     categories = inputs.get("categories", [])
 
@@ -105,7 +107,7 @@ Content: {content}
 Respond with ONLY valid JSON:
 {{"category": "...", "confidence": 0.0-1.0, "reasoning": "..."}}"""
 
-    response = await _call_claude(prompt)
+    response = await _call_openai(prompt)
     try:
         return json.loads(response)
     except json.JSONDecodeError:

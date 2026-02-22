@@ -62,7 +62,7 @@ class TestBlockExecutor:
             name="Nonexistent",
             description="No implementation",
             category="think",
-            organ="claude",
+            organ="openai",
         )
 
     @pytest.mark.asyncio

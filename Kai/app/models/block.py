@@ -19,6 +19,7 @@ class BlockCategory(str, Enum):
 class BlockOrgan(str, Enum):
     GEMINI = "gemini"
     CLAUDE = "claude"
+    OPENAI = "openai"
     ELEVENLABS = "elevenlabs"
     STRIPE = "stripe"
     MIRO = "miro"

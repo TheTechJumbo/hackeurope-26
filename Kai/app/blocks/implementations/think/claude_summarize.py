@@ -5,7 +5,7 @@ import logging
 import re
 from typing import Any
 
-import anthropic
+from openai import AsyncOpenAI
 
 from app.blocks.executor import register_implementation
 from app.config import settings
@@ -15,7 +15,7 @@ logger = logging.getLogger("agentflow.blocks.claude_summarize")
 
 @register_implementation("claude_summarize")
 async def claude_summarize(inputs: dict[str, Any]) -> dict[str, Any]:
-    """Use Claude to condense content into a concise summary."""
+    """Use OpenAI to condense content into a concise summary."""
     content = inputs["content"]
     max_length = inputs.get("max_length", "paragraph")
     focus = inputs.get("focus", "")
@@ -26,8 +26,8 @@ async def claude_summarize(inputs: dict[str, Any]) -> dict[str, Any]:
         "bullet_points": "Respond with 3-7 bullet points.",
     }
 
-    if not settings.anthropic_api_key:
-        raise ValueError("ANTHROPIC_API_KEY not configured — add it to .env")
+    if not settings.openai_api_key:
+        raise ValueError("OPENAI_API_KEY not configured — add it to .env")
 
     prompt = f"""Summarize the following content.
 {length_instructions.get(max_length, length_instructions["paragraph"])}
@@ -40,16 +40,18 @@ Respond with ONLY valid JSON:
 {{"summary": "<your summary>", "key_points": ["point1", "point2", ...]}}"""
 
     try:
-        client = anthropic.AsyncAnthropic(api_key=settings.anthropic_api_key)
-        message = await client.messages.create(
-            model="claude-sonnet-4-20250514",
+        client = AsyncOpenAI(api_key=settings.openai_api_key)
+        response = await client.chat.completions.create(
+            model=settings.default_model or "gpt-4o-mini",
             max_tokens=800,
+            temperature=settings.llm_temperature,
+            response_format={"type": "json_object"},
             messages=[{"role": "user", "content": prompt}],
         )
-    except anthropic.APIError as e:
-        raise ValueError(f"Claude API error: {e}") from e
+    except Exception as e:
+        raise ValueError(f"OpenAI API error: {e}") from e
 
-    response_text = message.content[0].text.strip()
+    response_text = (response.choices[0].message.content or "").strip()
 
     # Strip markdown code fences if present
     md_match = re.search(r"```(?:json)?\s*\n?(.*?)```", response_text, re.DOTALL)

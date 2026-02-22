@@ -3,8 +3,12 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     # AI
-    anthropic_api_key: str = ""
+    openai_api_key: str = ""
     google_gemini_api_key: str = ""
+    paid_api_key: str = ""
+    default_provider: str = ""
+    default_model: str = ""
+    llm_temperature: float = 0.0
 
     # Voice
     elevenlabs_api_key: str = ""
@@ -29,7 +33,11 @@ class Settings(BaseSettings):
     app_name: str = "AgentFlow"
     debug: bool = False
 
-    model_config = {"env_file": ".env", "env_file_encoding": "utf-8"}
+    model_config = {
+        "env_file": ".env",
+        "env_file_encoding": "utf-8",
+        "extra": "ignore",
+    }
 
 
 settings = Settings()

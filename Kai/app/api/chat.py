@@ -97,6 +97,9 @@ async def chat(request: ChatRequest) -> ChatResponse:
             request.message,
             conversation_history=conversation_history or None,
         )
+    except (RuntimeError, ValueError) as e:
+        logger.exception("Decomposition failed for message: %.200s", request.message)
+        raise HTTPException(status_code=500, detail=str(e))
     except Exception:
         logger.exception("Decomposition failed for message: %.200s", request.message)
         raise HTTPException(

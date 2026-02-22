@@ -23,13 +23,13 @@ class TestBlockDefinition:
             name="Test Block",
             description="A test block",
             category=BlockCategory.THINK,
-            organ=BlockOrgan.CLAUDE,
+            organ=BlockOrgan.OPENAI,
             input_schema={"type": "object", "properties": {"text": {"type": "string"}}},
             output_schema={"type": "object", "properties": {"result": {"type": "string"}}},
         )
         assert block.id == "test_block"
         assert block.category == "think"
-        assert block.organ == "claude"
+        assert block.organ == "openai"
         assert block.tier == 1
         assert block.api_type == "real"
 

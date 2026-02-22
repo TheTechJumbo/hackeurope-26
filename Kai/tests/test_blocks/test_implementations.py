@@ -135,7 +135,7 @@ class TestClaudeDecide:
         """Without API key, raises a clear error."""
         block = registry.get("claude_decide")
         with patch("app.blocks.implementations.think.claude_decide.settings") as mock_settings:
-            mock_settings.anthropic_api_key = ""
+            mock_settings.openai_api_key = ""
             result = await executor.execute(
                 block,
                 {
@@ -144,22 +144,24 @@ class TestClaudeDecide:
                 },
             )
             assert result.status == ExecutionStatus.FAILED
-            assert "ANTHROPIC_API_KEY" in result.error
+            assert "OPENAI_API_KEY" in result.error
 
     @pytest.mark.asyncio
     async def test_decide_with_mocked_api(self, executor, registry):
         """With mocked Claude API, returns decision."""
         block = registry.get("claude_decide")
 
-        mock_message = MagicMock()
-        mock_message.content = [MagicMock(text='{"chosen": {"name": "B", "price": 5}, "reasoning": "Cheapest option", "confidence": 0.9}')]
+        mock_response = MagicMock()
+        mock_response.choices = [
+            MagicMock(message=MagicMock(content='{"chosen": {"name": "B", "price": 5}, "reasoning": "Cheapest option", "confidence": 0.9}'))
+        ]
 
-        mock_client = AsyncMock()
-        mock_client.messages.create = AsyncMock(return_value=mock_message)
+        mock_client = MagicMock()
+        mock_client.chat.completions.create = AsyncMock(return_value=mock_response)
 
         with patch("app.blocks.implementations.think.claude_decide.settings") as mock_settings, \
-             patch("app.blocks.implementations.think.claude_decide.anthropic.AsyncAnthropic", return_value=mock_client):
-            mock_settings.anthropic_api_key = "test-key"
+             patch("app.blocks.implementations.think.claude_decide.AsyncOpenAI", return_value=mock_client):
+            mock_settings.openai_api_key = "test-key"
             result = await executor.execute(
                 block,
                 {
@@ -179,27 +181,29 @@ class TestClaudeSummarize:
         """Without API key, raises a clear error."""
         block = registry.get("claude_summarize")
         with patch("app.blocks.implementations.think.claude_summarize.settings") as mock_settings:
-            mock_settings.anthropic_api_key = ""
+            mock_settings.openai_api_key = ""
             result = await executor.execute(
                 block, {"content": "This is a long article about AI regulation."}
             )
             assert result.status == ExecutionStatus.FAILED
-            assert "ANTHROPIC_API_KEY" in result.error
+            assert "OPENAI_API_KEY" in result.error
 
     @pytest.mark.asyncio
     async def test_summarize_with_mocked_api(self, executor, registry):
         """With mocked Claude API, returns summary."""
         block = registry.get("claude_summarize")
 
-        mock_message = MagicMock()
-        mock_message.content = [MagicMock(text='{"summary": "AI regulation is evolving.", "key_points": ["Point 1", "Point 2"]}')]
+        mock_response = MagicMock()
+        mock_response.choices = [
+            MagicMock(message=MagicMock(content='{"summary": "AI regulation is evolving.", "key_points": ["Point 1", "Point 2"]}'))
+        ]
 
-        mock_client = AsyncMock()
-        mock_client.messages.create = AsyncMock(return_value=mock_message)
+        mock_client = MagicMock()
+        mock_client.chat.completions.create = AsyncMock(return_value=mock_response)
 
         with patch("app.blocks.implementations.think.claude_summarize.settings") as mock_settings, \
-             patch("app.blocks.implementations.think.claude_summarize.anthropic.AsyncAnthropic", return_value=mock_client):
-            mock_settings.anthropic_api_key = "test-key"
+             patch("app.blocks.implementations.think.claude_summarize.AsyncOpenAI", return_value=mock_client):
+            mock_settings.openai_api_key = "test-key"
             result = await executor.execute(
                 block, {"content": "This is a long article about AI regulation in Europe."}
             )

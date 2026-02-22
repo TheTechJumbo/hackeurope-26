@@ -8,7 +8,7 @@ import re
 import uuid
 from typing import Any
 
-import anthropic
+from openai import AsyncOpenAI
 
 from app.blocks.registry import BlockRegistry
 from app.config import settings
@@ -110,7 +110,7 @@ Only ask when genuinely ambiguous. If you can make a reasonable default, build t
 ## IMPORTANT: web_scrape_structured vs web_search + claude_summarize
 
 - `web_scrape_structured` requires a KNOWN URL and CSS selectors (e.g. `{{"price": ".product-price", "title": "h1"}}`). Only use it when you know the exact page structure.
-- For general information gathering (prices, news, weather, etc.) where you do NOT know the exact CSS selectors, use `web_search` → `claude_summarize` instead. The search returns text snippets that Claude can extract data from without needing CSS selectors.
+- For general information gathering (prices, news, weather, etc.) where you do NOT know the exact CSS selectors, use `web_search` → `claude_summarize` instead. The search returns text snippets that the LLM can extract data from without needing CSS selectors.
 - NEVER pass plain text strings as the `fields` input to `web_scrape_structured` — it MUST be a JSON object mapping field names to CSS selectors.
 
 ## Security
@@ -169,9 +169,8 @@ class OrchestraAgent:
         block_registry_text = _format_registry(self.registry)
         system = SYSTEM_PROMPT.format(block_registry=block_registry_text)
 
-        if not settings.anthropic_api_key:
-            logger.warning("No ANTHROPIC_API_KEY — returning mock pipeline")
-            return self._mock_decompose(user_request)
+        if not settings.openai_api_key:
+            raise RuntimeError("OPENAI_API_KEY is not set")
 
         # Build message array: previous conversation + new user request
         messages: list[dict[str, str]] = []
@@ -179,19 +178,20 @@ class OrchestraAgent:
             messages.extend(conversation_history)
         messages.append({"role": "user", "content": f"<user_request>{user_request}</user_request>"})
 
-        client = anthropic.AsyncAnthropic(api_key=settings.anthropic_api_key)
+        client = AsyncOpenAI(api_key=settings.openai_api_key)
         try:
-            message = await client.messages.create(
-                model="claude-sonnet-4-20250514",
+            response = await client.chat.completions.create(
+                model=settings.default_model or "gpt-4o-mini",
                 max_tokens=4096,
-                system=system,
-                messages=messages,
+                temperature=settings.llm_temperature,
+                response_format={"type": "json_object"},
+                messages=[{"role": "system", "content": system}, *messages],
             )
-        except anthropic.APIError as e:
-            logger.warning("Anthropic API error: %s — falling back to mock", e)
-            return self._mock_decompose(user_request)
+        except Exception as e:
+            logger.error("OpenAI API error: %s", e)
+            raise RuntimeError("OpenAI API error") from e
 
-        response_text = message.content[0].text.strip()
+        response_text = (response.choices[0].message.content or "").strip()
 
         # Strip markdown code fences if present
         md_match = re.search(r"```(?:json)?\s*\n?(.*?)```", response_text, re.DOTALL)
@@ -200,10 +200,9 @@ class OrchestraAgent:
 
         try:
             parsed = json.loads(response_text)
-        except json.JSONDecodeError:
+        except json.JSONDecodeError as e:
             logger.error("Orchestra returned invalid JSON: %s", response_text[:500])
-            logger.warning("Falling back to mock decomposition")
-            return self._mock_decompose(user_request)
+            raise ValueError("Orchestra returned invalid JSON") from e
 
         # Handle clarification responses gracefully
         if parsed.get("type") == "clarification":
@@ -248,80 +247,3 @@ class OrchestraAgent:
             edges=edges,
             memory_keys=decomposition.get("memory_keys", []),
         )
-
-    def _mock_decompose(self, user_request: str) -> dict[str, Any]:
-        """Generate a sensible mock pipeline when no API key is available."""
-        request_lower = user_request.lower()
-
-        # Detect trigger type
-        trigger_type = "manual"
-        schedule = None
-        if any(w in request_lower for w in ["every day", "daily", "every morning"]):
-            trigger_type = "cron"
-            schedule = "0 8 * * *"
-        elif any(w in request_lower for w in ["every week", "weekly", "every tuesday"]):
-            trigger_type = "cron"
-            schedule = "0 8 * * 2"
-        elif "every hour" in request_lower:
-            trigger_type = "cron"
-            schedule = "0 * * * *"
-
-        # Detect if search is needed
-        needs_search = any(
-            w in request_lower for w in ["search", "find", "look for", "monitor", "track", "news"]
-        )
-
-        # Detect if price/threshold is needed
-        needs_threshold = any(
-            w in request_lower for w in ["below", "above", "under", "over", "price", "cheaper"]
-        )
-
-        nodes = [{"id": "trigger", "block_id": f"trigger_{trigger_type}", "inputs": {}}]
-        edges = []
-        last_node = "trigger"
-
-        if needs_search:
-            nodes.append({
-                "id": "search",
-                "block_id": "web_search",
-                "inputs": {"query": user_request, "num_results": 5},
-            })
-            edges.append({"from_node": last_node, "to_node": "search"})
-            last_node = "search"
-
-        nodes.append({
-            "id": "summarize",
-            "block_id": "claude_summarize",
-            "inputs": {
-                "content": f"{{{{{last_node}.results}}}}" if needs_search else user_request,
-            },
-        })
-        edges.append({"from_node": last_node, "to_node": "summarize"})
-        last_node = "summarize"
-
-        if needs_threshold:
-            nodes.append({
-                "id": "check",
-                "block_id": "conditional_branch",
-                "inputs": {"condition": "price < 400", "value": "{{search.price}}"},
-            })
-            edges.append({"from_node": last_node, "to_node": "check"})
-            last_node = "check"
-
-        nodes.append({
-            "id": "notify",
-            "block_id": "notify_in_app",
-            "inputs": {
-                "title": "AgentFlow Result",
-                "message": f"{{{{{last_node}.summary}}}}" if not needs_threshold else "Result ready",
-            },
-        })
-        edges.append({"from_node": last_node, "to_node": "notify"})
-
-        return {
-            "trigger": {"type": trigger_type, "schedule": schedule},
-            "nodes": nodes,
-            "edges": edges,
-            "memory_keys": [],
-            "missing_blocks": [],
-        }

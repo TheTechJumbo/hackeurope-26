@@ -1,151 +1,345 @@
 [
   {
     "id": "claude_decide",
-    "name": "Decide (Claude)",
-    "description": "Use Claude to pick the best option from a set of choices based on criteria",
+    "name": "Decide (OpenAI)",
+    "description": "Use OpenAI to pick the best option from a set of choices based on criteria",
     "category": "think",
-    "organ": "claude",
+    "organ": "openai",
     "input_schema": {
       "type": "object",
       "properties": {
-        "options": { "type": "array", "items": { "type": "object" }, "description": "List of options to choose from" },
-        "criteria": { "type": "string", "description": "Decision criteria (e.g. 'cheapest', 'closest', 'healthiest')" },
-        "context": { "type": "string", "description": "Additional context for the decision" }
+        "options": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          },
+          "description": "List of options to choose from"
+        },
+        "criteria": {
+          "type": "string",
+          "description": "Decision criteria (e.g. 'cheapest', 'closest', 'healthiest')"
+        },
+        "context": {
+          "type": "string",
+          "description": "Additional context for the decision"
+        }
       },
-      "required": ["options", "criteria"]
+      "required": [
+        "options",
+        "criteria"
+      ]
     },
     "output_schema": {
       "type": "object",
       "properties": {
-        "chosen": { "type": "object", "description": "The selected option" },
-        "reasoning": { "type": "string", "description": "Why this option was chosen" },
-        "confidence": { "type": "number" }
+        "chosen": {
+          "type": "object",
+          "description": "The selected option"
+        },
+        "reasoning": {
+          "type": "string",
+          "description": "Why this option was chosen"
+        },
+        "confidence": {
+          "type": "number"
+        }
       }
     },
     "api_type": "real",
     "tier": 1,
     "examples": [
       {
-        "input": { "options": [{ "name": "Restaurant A", "price": 12 }, { "name": "Restaurant B", "price": 8 }], "criteria": "cheapest under €15" },
-        "output": { "chosen": { "name": "Restaurant B", "price": 8 }, "reasoning": "Restaurant B is the cheapest at €8", "confidence": 0.95 }
+        "input": {
+          "options": [
+            {
+              "name": "Restaurant A",
+              "price": 12
+            },
+            {
+              "name": "Restaurant B",
+              "price": 8
+            }
+          ],
+          "criteria": "cheapest under \u20ac15"
+        },
+        "output": {
+          "chosen": {
+            "name": "Restaurant B",
+            "price": 8
+          },
+          "reasoning": "Restaurant B is the cheapest at \u20ac8",
+          "confidence": 0.95
+        }
       }
     ]
   },
   {
     "id": "claude_summarize",
-    "name": "Summarize (Claude)",
-    "description": "Use Claude to condense content into a concise summary",
+    "name": "Summarize (OpenAI)",
+    "description": "Use OpenAI to condense content into a concise summary",
     "category": "think",
-    "organ": "claude",
+    "organ": "openai",
     "input_schema": {
       "type": "object",
       "properties": {
-        "content": { "type": "string", "description": "The text to summarize" },
-        "max_length": { "type": "string", "description": "Target length: 'one_sentence', 'paragraph', 'bullet_points'", "default": "paragraph" },
-        "focus": { "type": "string", "description": "What aspect to focus on" }
+        "content": {
+          "type": "string",
+          "description": "The text to summarize"
+        },
+        "max_length": {
+          "type": "string",
+          "description": "Target length: 'one_sentence', 'paragraph', 'bullet_points'",
+          "default": "paragraph"
+        },
+        "focus": {
+          "type": "string",
+          "description": "What aspect to focus on"
+        }
       },
-      "required": ["content"]
+      "required": [
+        "content"
+      ]
     },
     "output_schema": {
       "type": "object",
       "properties": {
-        "summary": { "type": "string" },
-        "key_points": { "type": "array", "items": { "type": "string" } }
-      }
-    },
-    "api_type": "real",
-    "tier": 1,
-    "examples": [
-      { "input": { "content": "Long article text here...", "max_length": "bullet_points" }, "output": { "summary": "Key findings from the article...", "key_points": ["Point 1", "Point 2", "Point 3"] } }
-    ]
-  },
-  {
-    "id": "claude_analyze",
-    "name": "Analyze (Claude)",
-    "description": "Use Claude to perform deep analysis on data, text, or situations",
-    "category": "think",
-    "organ": "claude",
-    "input_schema": {
-      "type": "object",
-      "properties": {
-        "data": { "type": "object", "description": "The data to analyze" },
-        "question": { "type": "string", "description": "What to analyze or the question to answer" },
-        "context": { "type": "string", "description": "Background context" }
-      },
-      "required": ["data", "question"]
-    },
-    "output_schema": {
-      "type": "object",
-      "properties": {
-        "analysis": { "type": "string" },
-        "findings": { "type": "array", "items": { "type": "string" } },
-        "recommendation": { "type": "string" }
-      }
-    },
-    "api_type": "real",
-    "tier": 1,
-    "examples": [
-      { "input": { "data": { "prices": [499, 479, 450, 420] }, "question": "Is the price trending down?" }, "output": { "analysis": "The price shows a consistent downward trend...", "findings": ["Price dropped 16% over 4 data points"], "recommendation": "Wait for further drops" } }
-    ]
-  },
-  {
-    "id": "claude_recommend",
-    "name": "Recommend (Claude)",
-    "description": "Use Claude to suggest the best option based on user preferences and history",
-    "category": "think",
-    "organ": "claude",
-    "input_schema": {
-      "type": "object",
-      "properties": {
-        "options": { "type": "array", "items": { "type": "object" } },
-        "preferences": { "type": "object", "description": "User preferences (budget, taste, etc.)" },
-        "history": { "type": "array", "items": { "type": "object" }, "description": "Past choices to avoid repetition" }
-      },
-      "required": ["options"]
-    },
-    "output_schema": {
-      "type": "object",
-      "properties": {
-        "recommendation": { "type": "object" },
-        "reasoning": { "type": "string" },
-        "alternatives": { "type": "array", "items": { "type": "object" } }
+        "summary": {
+          "type": "string"
+        },
+        "key_points": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
       }
     },
     "api_type": "real",
     "tier": 1,
     "examples": [
       {
-        "input": { "options": [{ "name": "Sushi Place" }, { "name": "Pizza Place" }], "preferences": { "budget": 15 }, "history": [{ "name": "Pizza Place" }] },
-        "output": { "recommendation": { "name": "Sushi Place" }, "reasoning": "Sushi Place is within budget and you had Pizza Place recently", "alternatives": [] }
+        "input": {
+          "content": "Long article text here...",
+          "max_length": "bullet_points"
+        },
+        "output": {
+          "summary": "Key findings from the article...",
+          "key_points": [
+            "Point 1",
+            "Point 2",
+            "Point 3"
+          ]
+        }
       }
     ]
   },
   {
-    "id": "claude_categorize",
-    "name": "Categorize (Claude)",
-    "description": "Use Claude to classify content into predefined or inferred categories",
+    "id": "claude_analyze",
+    "name": "Analyze (OpenAI)",
+    "description": "Use OpenAI to perform deep analysis on data, text, or situations",
     "category": "think",
-    "organ": "claude",
+    "organ": "openai",
     "input_schema": {
       "type": "object",
       "properties": {
-        "content": { "type": "string", "description": "The content to categorize" },
-        "categories": { "type": "array", "items": { "type": "string" }, "description": "Optional predefined categories" }
+        "data": {
+          "type": "object",
+          "description": "The data to analyze"
+        },
+        "question": {
+          "type": "string",
+          "description": "What to analyze or the question to answer"
+        },
+        "context": {
+          "type": "string",
+          "description": "Background context"
+        }
       },
-      "required": ["content"]
+      "required": [
+        "data",
+        "question"
+      ]
     },
     "output_schema": {
       "type": "object",
       "properties": {
-        "category": { "type": "string" },
-        "confidence": { "type": "number" },
-        "reasoning": { "type": "string" }
+        "analysis": {
+          "type": "string"
+        },
+        "findings": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "recommendation": {
+          "type": "string"
+        }
       }
     },
     "api_type": "real",
     "tier": 1,
     "examples": [
-      { "input": { "content": "New EU AI Act amendments proposed", "categories": ["tech", "politics", "finance", "sports"] }, "output": { "category": "tech", "confidence": 0.85, "reasoning": "The content is about AI regulation which falls under technology" } }
+      {
+        "input": {
+          "data": {
+            "prices": [
+              499,
+              479,
+              450,
+              420
+            ]
+          },
+          "question": "Is the price trending down?"
+        },
+        "output": {
+          "analysis": "The price shows a consistent downward trend...",
+          "findings": [
+            "Price dropped 16% over 4 data points"
+          ],
+          "recommendation": "Wait for further drops"
+        }
+      }
+    ]
+  },
+  {
+    "id": "claude_recommend",
+    "name": "Recommend (OpenAI)",
+    "description": "Use OpenAI to suggest the best option based on user preferences and history",
+    "category": "think",
+    "organ": "openai",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "options": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "preferences": {
+          "type": "object",
+          "description": "User preferences (budget, taste, etc.)"
+        },
+        "history": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          },
+          "description": "Past choices to avoid repetition"
+        }
+      },
+      "required": [
+        "options"
+      ]
+    },
+    "output_schema": {
+      "type": "object",
+      "properties": {
+        "recommendation": {
+          "type": "object"
+        },
+        "reasoning": {
+          "type": "string"
+        },
+        "alternatives": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "api_type": "real",
+    "tier": 1,
+    "examples": [
+      {
+        "input": {
+          "options": [
+            {
+              "name": "Sushi Place"
+            },
+            {
+              "name": "Pizza Place"
+            }
+          ],
+          "preferences": {
+            "budget": 15
+          },
+          "history": [
+            {
+              "name": "Pizza Place"
+            }
+          ]
+        },
+        "output": {
+          "recommendation": {
+            "name": "Sushi Place"
+          },
+          "reasoning": "Sushi Place is within budget and you had Pizza Place recently",
+          "alternatives": []
+        }
+      }
+    ]
+  },
+  {
+    "id": "claude_categorize",
+    "name": "Categorize (OpenAI)",
+    "description": "Use OpenAI to classify content into predefined or inferred categories",
+    "category": "think",
+    "organ": "openai",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "content": {
+          "type": "string",
+          "description": "The content to categorize"
+        },
+        "categories": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Optional predefined categories"
+        }
+      },
+      "required": [
+        "content"
+      ]
+    },
+    "output_schema": {
+      "type": "object",
+      "properties": {
+        "category": {
+          "type": "string"
+        },
+        "confidence": {
+          "type": "number"
+        },
+        "reasoning": {
+          "type": "string"
+        }
+      }
+    },
+    "api_type": "real",
+    "tier": 1,
+    "examples": [
+      {
+        "input": {
+          "content": "New EU AI Act amendments proposed",
+          "categories": [
+            "tech",
+            "politics",
+            "finance",
+            "sports"
+          ]
+        },
+        "output": {
+          "category": "tech",
+          "confidence": 0.85,
+          "reasoning": "The content is about AI regulation which falls under technology"
+        }
+      }
     ]
   }
 ]

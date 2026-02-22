@@ -40,7 +40,7 @@ class TestBlockRegistry:
             name="Custom Block",
             description="A dynamically created block",
             category="think",
-            organ="claude",
+            organ="openai",
         )
         loaded_registry.register(new_block)
         assert loaded_registry.get("custom_block") is not None
