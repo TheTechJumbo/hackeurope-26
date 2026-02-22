@@ -1,28 +1,27 @@
-"""Pipeline CRUD and execution endpoints."""
+"""Pipeline CRUD and execution endpoints (Supabase-backed)."""
 
 from __future__ import annotations
 
-import json
 import logging
 from typing import Any
+import uuid
+from datetime import datetime, timezone
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
 from app.api.dependencies import get_registry
-from app.database import get_db
-from app.engine.runner import PipelineRunner
+from app.engine.doer import run_pipeline
+from app.engine.execution_utils import build_node_results
 from app.engine.scheduler import list_scheduled, remove_schedule, schedule_pipeline
-from app.memory.store import memory_store
-from app.models.execution import ExecutionResult
-from app.models.pipeline import Pipeline, TriggerType
+from app.storage.memory import memory_store
 
 logger = logging.getLogger("agentflow.api.pipelines")
 router = APIRouter(prefix="/api", tags=["pipelines"])
 
 
 class PipelineCreate(BaseModel):
-    pipeline: Pipeline
+    pipeline: dict
 
 
 class PipelineListItem(BaseModel):
@@ -36,49 +35,80 @@ class PipelineListItem(BaseModel):
     trigger: dict
 
 
+def _edges_to_engine(edges: list[dict]) -> list[dict]:
+    converted = []
+    for e in edges:
+        converted.append({
+            "from": e.get("from") or e.get("from_node"),
+            "to": e.get("to") or e.get("to_node"),
+            "condition": e.get("condition"),
+        })
+    return converted
+
+
+def _edges_to_ui(edges: list[dict]) -> list[dict]:
+    converted = []
+    for e in edges:
+        converted.append({
+            "from_node": e.get("from") or e.get("from_node"),
+            "to_node": e.get("to") or e.get("to_node"),
+            "condition": e.get("condition"),
+        })
+    return converted
+
+
 @router.post("/pipelines")
 async def create_pipeline(request: PipelineCreate) -> dict[str, str]:
     """Store a pipeline definition."""
     p = request.pipeline
-    with get_db() as conn:
-        conn.execute(
-            "INSERT OR REPLACE INTO pipelines (id, user_intent, definition, status) VALUES (?, ?, ?, ?)",
-            (p.id, p.user_intent, p.model_dump_json(), p.status.value),
-        )
-        conn.commit()
+    pipeline_id = p.get("id") or f"pipe_{uuid.uuid4().hex[:10]}"
 
-    # Auto-schedule cron/interval pipelines immediately on creation
-    if p.trigger.type in {TriggerType.CRON, TriggerType.INTERVAL}:
+    trigger = p.get("trigger", {"type": p.get("trigger_type", "manual")})
+    trigger_type = trigger.get("type", p.get("trigger_type", "manual"))
+
+    nodes = p.get("nodes", [])
+    edges_engine = _edges_to_engine(p.get("edges", []))
+
+    memory_store.save_pipeline(pipeline_id, {
+        "id": pipeline_id,
+        "name": p.get("name", "Untitled"),
+        "user_prompt": p.get("user_intent", p.get("user_prompt", "")),
+        "user_id": p.get("user_id", "default_user"),
+        "nodes": nodes,
+        "edges": edges_engine,
+        "memory_keys": p.get("memory_keys", []),
+        "status": p.get("status", "created"),
+        "trigger_type": trigger_type,
+        "trigger": trigger,
+    })
+
+    # Auto-schedule cron/interval pipelines
+    if trigger_type in {"cron", "interval"}:
         schedule_pipeline(
-            p.id,
-            schedule=p.trigger.schedule,
-            interval_seconds=p.trigger.interval_seconds,
+            pipeline_id,
+            schedule=trigger.get("schedule"),
+            interval_seconds=trigger.get("interval_seconds"),
         )
-        logger.info("Auto-scheduled pipeline %s on creation", p.id)
+        logger.info("Auto-scheduled pipeline %s on creation", pipeline_id)
 
-    return {"id": p.id, "status": "created"}
+    return {"id": pipeline_id, "status": "created"}
 
 
 @router.get("/pipelines", response_model=list[PipelineListItem])
 async def list_pipelines() -> list[PipelineListItem]:
     """List all pipelines."""
-    with get_db() as conn:
-        rows = conn.execute(
-            "SELECT id, user_intent, status, definition FROM pipelines ORDER BY created_at DESC"
-        ).fetchall()
-
     items = []
-    for row in rows:
-        defn = json.loads(row["definition"])
+    for row in memory_store.list_pipelines():
+        nodes = [{**n, "config": n.get("config", {})} for n in row.get("nodes", [])]
         items.append(PipelineListItem(
             id=row["id"],
-            user_intent=row["user_intent"],
-            status=row["status"],
-            trigger_type=defn.get("trigger", {}).get("type", "manual"),
-            node_count=len(defn.get("nodes", [])),
-            nodes=defn.get("nodes", []),
-            edges=defn.get("edges", []),
-            trigger=defn.get("trigger", {"type": "manual"}),
+            user_intent=row.get("user_prompt", ""),
+            status=row.get("status", "created"),
+            trigger_type=row.get("trigger_type", "manual"),
+            node_count=len(nodes),
+            nodes=nodes,
+            edges=_edges_to_ui(row.get("edges", [])),
+            trigger=row.get("trigger", {"type": row.get("trigger_type", "manual")}),
         ))
     return items
 
@@ -86,69 +116,82 @@ async def list_pipelines() -> list[PipelineListItem]:
 @router.get("/pipelines/{pipeline_id}")
 async def get_pipeline(pipeline_id: str) -> dict[str, Any]:
     """Get a pipeline by ID."""
-    with get_db() as conn:
-        row = conn.execute(
-            "SELECT * FROM pipelines WHERE id = ?", (pipeline_id,)
-        ).fetchone()
-
+    row = memory_store.get_pipeline(pipeline_id)
     if row is None:
         raise HTTPException(status_code=404, detail="Pipeline not found")
 
     return {
         "id": row["id"],
-        "user_intent": row["user_intent"],
-        "status": row["status"],
-        "definition": json.loads(row["definition"]),
-        "created_at": row["created_at"],
+        "user_intent": row.get("user_prompt", ""),
+        "status": row.get("status", "created"),
+        "definition": {
+            **row,
+            "nodes": [{**n, "config": n.get("config", {})} for n in row.get("nodes", [])],
+            "edges": _edges_to_ui(row.get("edges", [])),
+        },
+        "created_at": row.get("created_at"),
     }
 
 
 @router.post("/pipelines/{pipeline_id}/run")
-async def run_pipeline(pipeline_id: str) -> ExecutionResult:
+async def run_pipeline_endpoint(pipeline_id: str) -> dict[str, Any]:
     """Execute a stored pipeline."""
-    with get_db() as conn:
-        row = conn.execute(
-            "SELECT definition FROM pipelines WHERE id = ?", (pipeline_id,)
-        ).fetchone()
-
+    row = memory_store.get_pipeline(pipeline_id)
     if row is None:
         raise HTTPException(status_code=404, detail="Pipeline not found")
 
-    pipeline = Pipeline(**json.loads(row["definition"]))
-    registry = get_registry()
-    runner = PipelineRunner(registry=registry, memory=memory_store)
-    result = await runner.run(pipeline)
+    pipeline = dict(row)
+    pipeline["edges"] = row.get("edges", [])
 
-    # Update status
-    with get_db() as conn:
-        conn.execute(
-            "UPDATE pipelines SET status = ?, updated_at = datetime('now') WHERE id = ?",
-            (result.status.value, pipeline_id),
-        )
-        conn.commit()
+    run_id = f"run_{uuid.uuid4().hex[:12]}"
+    result = await run_pipeline(pipeline, "default_user", run_id=run_id, broadcast=True)
 
-    # Schedule recurring execution for cron/interval triggers
-    if pipeline.trigger.type in {TriggerType.CRON, TriggerType.INTERVAL}:
+    results_data = result.get("results", {})
+    node_results, status, shared_context = build_node_results(pipeline, results_data)
+
+    execution = {
+        "run_id": run_id,
+        "pipeline_id": pipeline_id,
+        "pipeline_intent": row.get("user_prompt", row.get("name", "")),
+        "pipeline_name": row.get("name", ""),
+        "node_count": len(pipeline.get("nodes", [])),
+        "status": status,
+        "nodes": node_results,
+        "shared_context": shared_context,
+        "finished_at": datetime.now(timezone.utc).isoformat(),
+        "user_id": "default_user",
+    }
+    memory_store.save_execution(run_id, execution)
+
+    # Update pipeline status
+    row["status"] = status
+    memory_store.save_pipeline(pipeline_id, row)
+
+    # Schedule recurring pipelines (cron/interval)
+    trigger = row.get("trigger", {"type": row.get("trigger_type", "manual")})
+    trigger_type = trigger.get("type", row.get("trigger_type", "manual"))
+    if trigger_type in {"cron", "interval"}:
         schedule_pipeline(
             pipeline_id,
-            schedule=pipeline.trigger.schedule,
-            interval_seconds=pipeline.trigger.interval_seconds,
+            schedule=trigger.get("schedule"),
+            interval_seconds=trigger.get("interval_seconds"),
         )
 
-    return result
+    return {
+        "pipeline_id": pipeline_id,
+        "run_id": run_id,
+        "status": status,
+        "shared_context": execution["shared_context"],
+        "node_results": node_results,
+        "errors": [],
+    }
 
 
 @router.delete("/pipelines/{pipeline_id}")
 async def delete_pipeline(pipeline_id: str) -> dict[str, str]:
     """Delete a pipeline."""
     remove_schedule(pipeline_id)
-
-    with get_db() as conn:
-        cursor = conn.execute("DELETE FROM pipelines WHERE id = ?", (pipeline_id,))
-        conn.commit()
-        if cursor.rowcount == 0:
-            raise HTTPException(status_code=404, detail="Pipeline not found")
-
+    memory_store.delete_pipeline(pipeline_id)
     return {"id": pipeline_id, "status": "deleted"}
 
 

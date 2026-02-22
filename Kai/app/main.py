@@ -11,8 +11,9 @@ from app.api.pipelines import router as pipelines_router
 from app.api.webhooks import router as webhooks_router
 from app.api.sse import router as sse_router
 from app.api.websocket import router as websocket_router
+from app.api.automation import router as automation_router
+from app.blocks.loader import load_all_implementations
 from app.config import settings
-from app.database import init_db
 from app.engine.scheduler import rehydrate_schedules, shutdown_scheduler, start_scheduler
 
 logging.basicConfig(
@@ -24,8 +25,8 @@ logger = logging.getLogger("agentflow")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    logger.info("Initializing database...")
-    init_db()
+    logger.info("Loading block implementations...")
+    load_all_implementations()
     start_scheduler()
     rehydrate_schedules()
     logger.info("AgentFlow started.")
@@ -52,6 +53,7 @@ app.include_router(blocks_router)
 app.include_router(webhooks_router)
 app.include_router(sse_router)
 app.include_router(websocket_router)
+app.include_router(automation_router)
 
 
 @app.get("/health")

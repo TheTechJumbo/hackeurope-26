@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-import json
 import logging
 from typing import Any
 
 from app.blocks.executor import register_implementation
-from app.database import get_db
+from app.storage.memory import memory_store
 
 logger = logging.getLogger("agentflow.blocks.interactive")
 
@@ -19,20 +18,25 @@ async def ask_user_confirm(inputs: dict[str, Any]) -> dict[str, Any]:
     """
     question = inputs["question"]
     details = inputs.get("details", {})
+    context = inputs.get("__context", {})
+    pipeline_id = context.get("pipeline_id")
+    run_id = context.get("run_id")
+    node_id = context.get("node_id")
+    user_id = context.get("user_id")
 
     logger.info("User confirmation requested: %s (details: %s)", question, details)
 
-    with get_db() as conn:
-        conn.execute(
-            """INSERT INTO notifications (title, message, level, category, metadata)
-               VALUES (?, ?, 'warning', 'confirmation', ?)""",
-            (
-                "Confirmation Requested",
-                question,
-                json.dumps({"details": details, "auto_confirmed": True}),
-            ),
-        )
-        conn.commit()
+    memory_store.add_notification({
+        "user_id": user_id,
+        "pipeline_id": pipeline_id,
+        "run_id": run_id,
+        "node_id": node_id,
+        "title": "Confirmation Requested",
+        "message": question,
+        "level": "warning",
+        "category": "confirmation",
+        "metadata": {"details": details, "auto_confirmed": True},
+    })
 
     return {
         "confirmed": True,
@@ -46,6 +50,11 @@ async def present_summary_card(inputs: dict[str, Any]) -> dict[str, Any]:
     title = inputs["title"]
     data = inputs["data"]
     highlight = inputs.get("highlight", "")
+    context = inputs.get("__context", {})
+    pipeline_id = context.get("pipeline_id")
+    run_id = context.get("run_id")
+    node_id = context.get("node_id")
+    user_id = context.get("user_id")
 
     if isinstance(data, str):
         fields = [{"label": "Summary", "value": data}]
@@ -59,16 +68,16 @@ async def present_summary_card(inputs: dict[str, Any]) -> dict[str, Any]:
 
     card = {"title": title, "fields": fields, "highlight": highlight}
 
-    with get_db() as conn:
-        conn.execute(
-            """INSERT INTO notifications (title, message, level, category, metadata)
-               VALUES (?, ?, 'info', 'summary_card', ?)""",
-            (
-                title,
-                highlight or "Summary card generated",
-                json.dumps({"card": card}),
-            ),
-        )
-        conn.commit()
+    memory_store.add_notification({
+        "user_id": user_id,
+        "pipeline_id": pipeline_id,
+        "run_id": run_id,
+        "node_id": node_id,
+        "title": title,
+        "message": highlight or "Summary card generated",
+        "level": "info",
+        "category": "summary_card",
+        "metadata": {"card": card},
+    })
 
     return {"card": card}

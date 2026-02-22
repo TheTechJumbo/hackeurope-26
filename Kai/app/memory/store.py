@@ -4,37 +4,24 @@ import json
 import logging
 from typing import Any
 
-from app.database import get_db
+from app.storage.memory import memory_store as _supabase_store
 
 logger = logging.getLogger("agentflow.memory")
 
 
 class MemoryStore:
-    """SQLite-backed key-value store with namespaces."""
+    """Supabase-backed key-value store with namespaces."""
 
     def read(self, key: str, namespace: str = "default") -> Any | None:
-        with get_db() as conn:
-            row = conn.execute(
-                "SELECT value FROM memory WHERE namespace = ? AND key = ?",
-                (namespace, key),
-            ).fetchone()
-            if row is None:
-                return None
-            return json.loads(row["value"])
+        data = _supabase_store.get_memory(namespace) or {}
+        return data.get(key)
 
     def write(self, key: str, value: Any, namespace: str = "default") -> None:
-        with get_db() as conn:
-            conn.execute(
-                """INSERT INTO memory (namespace, key, value, updated_at)
-                   VALUES (?, ?, ?, datetime('now'))
-                   ON CONFLICT(namespace, key)
-                   DO UPDATE SET value = excluded.value, updated_at = datetime('now')""",
-                (namespace, key, json.dumps(value)),
-            )
-            conn.commit()
+        data = _supabase_store.get_memory(namespace) or {}
+        data[key] = value
+        _supabase_store.save_memory(namespace, data)
 
     def append(self, key: str, value: Any, namespace: str = "default") -> int:
-        """Append to a list stored at key. Creates the list if it doesn't exist."""
         existing = self.read(key, namespace)
         if existing is None:
             existing = []
@@ -45,29 +32,22 @@ class MemoryStore:
         return len(existing)
 
     def delete(self, key: str, namespace: str = "default") -> bool:
-        with get_db() as conn:
-            cursor = conn.execute(
-                "DELETE FROM memory WHERE namespace = ? AND key = ?",
-                (namespace, key),
-            )
-            conn.commit()
-            return cursor.rowcount > 0
+        data = _supabase_store.get_memory(namespace) or {}
+        existed = key in data
+        if existed:
+            data.pop(key, None)
+            _supabase_store.save_memory(namespace, data)
+        return existed
 
     def list_keys(self, namespace: str = "default") -> list[str]:
-        with get_db() as conn:
-            rows = conn.execute(
-                "SELECT key FROM memory WHERE namespace = ?", (namespace,)
-            ).fetchall()
-            return [row["key"] for row in rows]
+        data = _supabase_store.get_memory(namespace) or {}
+        return list(data.keys())
 
     def clear_namespace(self, namespace: str = "default") -> int:
-        with get_db() as conn:
-            cursor = conn.execute(
-                "DELETE FROM memory WHERE namespace = ?", (namespace,)
-            )
-            conn.commit()
-            return cursor.rowcount
+        data = _supabase_store.get_memory(namespace) or {}
+        count = len(data)
+        _supabase_store.save_memory(namespace, {})
+        return count
 
 
-# Global singleton
 memory_store = MemoryStore()

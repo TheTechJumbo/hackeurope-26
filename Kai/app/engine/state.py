@@ -1,34 +1,42 @@
-"""LangGraph state definition for pipeline execution."""
+"""State definitions for the Thinker and Doer pipelines.
+
+Plain TypedDicts — no framework-specific reducers needed.
+"""
 
 from __future__ import annotations
 
-from typing import Annotated, Any, TypedDict
+from typing import Any, TypedDict
 
 
-def merge_dicts(old: dict, new: dict) -> dict:
-    """Reducer: merge new keys into existing dict."""
-    merged = {**old}
-    merged.update(new)
-    return merged
+class ThinkerState(TypedDict):
+    # ── Input ──
+    user_intent: str
+    user_id: str
 
+    # ── Decomposition ──
+    required_blocks: list[dict]
 
-def append_list(old: list, new: list) -> list:
-    """Reducer: append new items to existing list."""
-    return old + new
+    # ── Matching ──
+    matched_blocks: list[dict]
+    missing_blocks: list[dict]
+
+    # ── Pipeline construction ──
+    pipeline_json: dict | None
+
+    # ── Control ──
+    status: str  # "decomposing" | "matching" | "wiring" | "done" | "error"
+    error: str | None
+    log: list[dict]
 
 
 class PipelineState(TypedDict):
-    # Accumulated outputs from all executed blocks: {node_id: {output_dict}}
-    shared_context: Annotated[dict[str, Any], merge_dicts]
-    # Ordered log of executed node IDs
-    execution_log: Annotated[list[str], append_list]
-    # Any errors encountered
-    errors: Annotated[list[str], append_list]
-    # Memory values loaded at pipeline start
+    user_id: str
+    pipeline_id: str
+
+    # ── DATA BUS ── every block reads/writes here
+    # {"n1": {"results": [...]}, "n2": {"summary": "..."}}
+    results: dict[str, Any]
+
+    user: dict[str, Any]
     memory: dict[str, Any]
-    # The pipeline definition (nodes, edges, etc.)
-    pipeline_def: dict[str, Any]
-    # Trigger data passed at pipeline start
-    trigger_data: dict[str, Any]
-    # Previous run's shared_context for condition-based watching (old vs new comparison)
-    checkpoint: dict[str, Any]
+    log: list[dict]

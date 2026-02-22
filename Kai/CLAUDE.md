@@ -38,7 +38,7 @@ User (natural language) → Orchestra Agent (decompose + wire)
 - Payments: Stripe SDK
 - Visual Memory: Miro API
 - Frontend: Next.js + Tailwind + React Flow
-- Database: SQLite (MVP) → Supabase (prod)
+- Database: Supabase (Postgres)
 - Scheduling: APScheduler
 - Web scraping: httpx + BeautifulSoup / Firecrawl
 
@@ -54,7 +54,7 @@ User (natural language) → Orchestra Agent (decompose + wire)
 - [ ] Set up FastAPI app skeleton (`app/main.py`)
 - [ ] Create directory structure (see below)
 - [ ] Set up `.env` template for API keys
-- [ ] Create SQLite database initialization
+- [ ] Create Supabase schema and client setup
 - [ ] Add basic logging configuration
 - [ ] Set up pytest infrastructure
 
@@ -65,7 +65,6 @@ Kai/
 ├── app/
 │   ├── main.py                  # FastAPI entry point
 │   ├── config.py                # Settings & env vars
-│   ├── database.py              # SQLite setup
 │   │
 │   ├── models/                  # Pydantic data models
 │   │   ├── block.py             # BlockDefinition, BlockReference
@@ -190,7 +189,7 @@ pytest tests/test_models.py tests/test_blocks/test_registry.py -v
   - Enforces input/output schema validation
 - [ ] Implement each of the 10 blocks as async Python functions
 - [ ] Create integration wrappers (Anthropic client, web client)
-- [ ] Implement Memory Store (SQLite-backed KV with namespaces)
+- [ ] Implement Memory Store (Supabase-backed KV with namespaces)
 
 **Testing:**
 - Each block tested in isolation with mock inputs

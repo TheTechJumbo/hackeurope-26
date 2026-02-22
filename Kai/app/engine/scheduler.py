@@ -1,23 +1,22 @@
-"""Pipeline scheduler — runs cron/interval pipelines on a recurring schedule.
+"""Pipeline scheduler - runs cron/interval pipelines on a recurring schedule.
 
-Uses APScheduler with a SQLAlchemy-backed job store so scheduled jobs
-survive server restarts. Missed runs within the grace period are coalesced
-into a single execution on recovery.
+Uses APScheduler with the in-memory job store, so jobs do not persist
+across restarts. Missed runs within the grace period are coalesced into
+a single execution on recovery.
 """
 
 from __future__ import annotations
 
-import json
 import logging
+from datetime import datetime, timezone
 import re
-from pathlib import Path
-
-from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 from apscheduler.triggers.interval import IntervalTrigger
 
-from app.database import get_db
+from app.engine.doer import run_pipeline
+from app.engine.execution_utils import build_node_results
+from app.storage.memory import memory_store
 
 logger = logging.getLogger("agentflow.scheduler")
 
@@ -25,25 +24,18 @@ logger = logging.getLogger("agentflow.scheduler")
 # as long as we're within this grace period (1 hour).
 MISFIRE_GRACE_TIME_SECONDS = 3600
 
-# Store scheduled jobs in the same directory as the main DB.
-_JOBS_DB_PATH = Path(__file__).parent.parent.parent / "agentflow_jobs.db"
-
 _scheduler: AsyncIOScheduler | None = None
 
 
 def get_scheduler() -> AsyncIOScheduler:
     global _scheduler
     if _scheduler is None:
-        jobstores = {
-            "default": SQLAlchemyJobStore(url=f"sqlite:///{_JOBS_DB_PATH}"),
-        }
         job_defaults = {
             "misfire_grace_time": MISFIRE_GRACE_TIME_SECONDS,
             "coalesce": True,       # Merge missed runs into a single execution
             "max_instances": 1,     # Prevent overlapping runs of the same job
         }
         _scheduler = AsyncIOScheduler(
-            jobstores=jobstores,
             job_defaults=job_defaults,
         )
     return _scheduler
@@ -53,7 +45,7 @@ def start_scheduler() -> None:
     scheduler = get_scheduler()
     if not scheduler.running:
         scheduler.start()
-        logger.info("Scheduler started (persistent job store at %s)", _JOBS_DB_PATH)
+        logger.info("Scheduler started (in-memory job store)")
 
 
 def shutdown_scheduler() -> None:
@@ -66,43 +58,39 @@ def shutdown_scheduler() -> None:
 
 async def _execute_pipeline_job(pipeline_id: str) -> None:
     """Job callback — re-runs a pipeline by ID."""
-    # Import here to avoid circular imports
-    from app.api.dependencies import get_registry
-    from app.engine.runner import PipelineRunner
-    from app.memory.store import memory_store
-    from app.models.pipeline import Pipeline
-
     logger.info("Scheduled execution of pipeline %s", pipeline_id)
 
-    with get_db() as conn:
-        row = conn.execute(
-            "SELECT definition FROM pipelines WHERE id = ?", (pipeline_id,)
-        ).fetchone()
-
-    if row is None:
+    pipeline = memory_store.get_pipeline(pipeline_id)
+    if not pipeline:
         logger.warning("Pipeline %s not found — removing scheduled job", pipeline_id)
         remove_schedule(pipeline_id)
         return
 
-    pipeline = Pipeline(**json.loads(row["definition"]))
-    registry = get_registry()
-    runner = PipelineRunner(registry=registry, memory=memory_store)
+    # Load checkpoint from last run for condition-based watching (reserved for future use)
+    _load_last_checkpoint(pipeline_id)
 
-    # Load checkpoint from last run for condition-based watching
-    checkpoint = _load_last_checkpoint(pipeline_id)
-    trigger_data = {"checkpoint": checkpoint} if checkpoint else None
+    run_id = f"run_{pipeline_id}"
+    result = await run_pipeline(pipeline, "default_user", run_id=run_id, broadcast=False)
 
-    result = await runner.run(pipeline, trigger_data=trigger_data)
+    node_results, status, shared_context = build_node_results(pipeline, result.get("results", {}))
+    pipeline["status"] = status
+    memory_store.save_pipeline(pipeline_id, pipeline)
 
-    with get_db() as conn:
-        conn.execute(
-            "UPDATE pipelines SET status = ?, updated_at = datetime('now') WHERE id = ?",
-            (result.status.value, pipeline_id),
-        )
-        conn.commit()
+    memory_store.save_execution(run_id, {
+        "run_id": run_id,
+        "pipeline_id": pipeline_id,
+        "pipeline_intent": pipeline.get("user_prompt", pipeline.get("name", "")),
+        "pipeline_name": pipeline.get("name", ""),
+        "node_count": len(pipeline.get("nodes", [])),
+        "status": status,
+        "nodes": node_results,
+        "shared_context": shared_context,
+        "finished_at": datetime.now(timezone.utc).isoformat(),
+        "user_id": "default_user",
+    })
 
     logger.info(
-        "Scheduled run of %s finished: %s", pipeline_id, result.status.value
+        "Scheduled run of %s finished", pipeline_id
     )
 
 
@@ -199,9 +187,8 @@ def list_scheduled() -> list[dict]:
 def rehydrate_schedules() -> int:
     """Re-register all cron/interval pipelines from the DB after server restart.
 
-    With the persistent job store, APScheduler already knows about existing jobs.
-    This function ensures any pipelines added to the DB while the scheduler was
-    down (e.g. via direct DB insert) also get scheduled.
+    This function ensures all persisted cron/interval pipelines get scheduled
+    when the server starts.
 
     Returns the number of pipelines re-scheduled.
     """
@@ -211,18 +198,10 @@ def rehydrate_schedules() -> int:
     existing_job_ids = {job.id for job in scheduler.get_jobs()}
 
     count = 0
-    with get_db() as conn:
-        rows = conn.execute(
-            "SELECT id, definition FROM pipelines WHERE status != 'deleted'"
-        ).fetchall()
+    rows = memory_store.list_pipelines()
 
     for row in rows:
-        try:
-            defn = json.loads(row["definition"])
-        except (json.JSONDecodeError, TypeError):
-            continue
-
-        trigger = defn.get("trigger", {})
+        trigger = row.get("trigger", {})
         trigger_type = trigger.get("type", "manual")
         if trigger_type not in ("cron", "interval"):
             continue
@@ -254,17 +233,7 @@ def _load_last_checkpoint(pipeline_id: str) -> dict:
 
     Used by condition-based watching to compare old vs new data.
     """
-    with get_db() as conn:
-        row = conn.execute(
-            """SELECT output_data FROM execution_logs
-               WHERE pipeline_id = ? AND status = 'completed'
-               ORDER BY finished_at DESC LIMIT 1""",
-            (pipeline_id,),
-        ).fetchone()
-
-    if row and row["output_data"]:
-        try:
-            return json.loads(row["output_data"])
-        except (json.JSONDecodeError, TypeError):
-            pass
-    return {}
+    last = memory_store.get_last_execution_for_pipeline(pipeline_id)
+    if not last:
+        return {}
+    return last.get("shared_context", {}) or {}

@@ -239,17 +239,41 @@ export default function ChatPage() {
       if (response.response_type === "clarification") {
         dispatch({
           type: "RECEIVE_CLARIFICATION",
-          message: response.clarification_message,
-          questions: response.questions,
-          sessionId: response.session_id,
+          message: response.clarification_message || "I need a bit more detail.",
+          questions: response.questions?.length ? response.questions : [response.clarification_message || ""],
+          sessionId: response.session_id || state.sessionId || "",
         });
-      } else {
-        dispatch({ type: "RECEIVE_PIPELINE", pipeline: response });
+        return;
       }
-    } catch {
-      dispatch({ type: "ERROR", error: "Failed to process your request. Is the backend running?" });
+
+      const nodes = (response.nodes || []).map((n) => ({
+        ...n,
+        config: n.config || {},
+      }));
+      const edges = (response.edges || []).map((e) => ({
+        from_node: (e as any).from_node ?? (e as any).from,
+        to_node: (e as any).to_node ?? (e as any).to,
+        condition: (e as any).condition ?? null,
+      }));
+
+      dispatch({
+        type: "RECEIVE_PIPELINE",
+        pipeline: {
+          ...response,
+          nodes,
+          edges,
+          user_intent: response.user_intent || message,
+        },
+      });
+    } catch (error) {
+      dispatch({
+        type: "ERROR",
+        error: error instanceof Error
+          ? error.message
+          : "Failed to process your request. Is the backend running?",
+      });
     }
-  }, [input, state.phase, state.sessionId]);
+  }, [input, state.phase, state.sessionId, state.messages]);
 
   const buildSavePayload = useCallback(() => {
     const p = state.currentPipeline!;
