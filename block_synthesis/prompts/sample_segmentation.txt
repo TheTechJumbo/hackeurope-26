@@ -1,8 +1,0 @@
-Inputs:
-- image (type: PNG image file): Image to be segmented.
-
-Outputs:
-- mask (type: binary image): Segmentation result.
-
-Purpose:
-Segment the foreground object from the input image.
